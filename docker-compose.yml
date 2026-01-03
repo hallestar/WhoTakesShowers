@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  whotakesshowers:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: whotakesshowers
+    restart: unless-stopped
+    ports:
+      - "8080:8080"  # 应用端口
+      - "3000:80"    # 可选：通过Nginx访问前端
+    volumes:
+      # 持久化数据
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      # 开发模式：挂载源代码（可选）
+      # - ./frontend/src:/app/frontend/src
+      # - ./backend:/app/backend
+    environment:
+      - GIN_MODE=release
+      - TZ=Asia/Shanghai
+    networks:
+      - whotakesshowers-net
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/api/projects"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # 可选：Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: whotakesshowers-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - whotakesshowers
+    networks:
+      - whotakesshowers-net
+
+networks:
+  whotakesshowers-net:
+    driver: bridge

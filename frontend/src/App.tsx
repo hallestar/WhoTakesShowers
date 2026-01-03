@@ -1,11 +1,29 @@
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import Candidates from './pages/Candidates';
 import History from './pages/History';
 import ProjectDetail from './pages/ProjectDetail';
 import Settings from './pages/Settings';
+import { getCandidateTerm } from './utils/candidateTerm';
 
 function App() {
+  const [candidateTerm, setCandidateTerm] = useState(() => getCandidateTerm());
+
+  // 监听storage变化，实时更新候选人称呼
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setCandidateTerm(getCandidateTerm());
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('localStorageUpdated', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('localStorageUpdated', handleStorageChange);
+    };
+  }, []);
   return (
     <Router>
       <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
@@ -41,7 +59,7 @@ function App() {
                   📜 历史记录
                 </Link>
                 <Link to="/candidates" className="arcade-btn arcade-btn-accent">
-                  👥 候选人
+                  👥 {candidateTerm}
                 </Link>
                 <Link to="/settings" className="arcade-btn" style={{ background: 'var(--lime-green)', color: 'var(--deep-purple)' }}>
                   ⚙️ 设置

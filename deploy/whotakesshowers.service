@@ -1,0 +1,27 @@
+[Unit]
+Description=WhoTakesShowers Backend Service
+Documentation=https://github.com/yourusername/WhoTakesShowers
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/whotakesshowers
+ExecStart=/opt/whotakesshowers/whotakesshowers
+Restart=always
+RestartSec=5
+
+# 环境变量
+Environment="GIN_MODE=release"
+
+# 日志
+StandardOutput=journal
+StandardError=journal
+
+# 安全设置
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

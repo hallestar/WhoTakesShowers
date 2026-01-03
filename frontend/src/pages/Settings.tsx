@@ -33,6 +33,9 @@ const EMOJI_OPTIONS: EmojiOption[] = [
   { name: '酷', emoji: '😏' },
 ];
 
+// 默认快捷选项
+const DEFAULT_QUICK_OPTIONS = ['候选人', '机灵鬼', '小伙伴', '幸运儿', '勇士', '挑战者'];
+
 export default function Settings() {
   const [randomAvatar, setRandomAvatar] = useState(() => {
     const saved = localStorage.getItem('randomAvatar');
@@ -44,12 +47,71 @@ export default function Settings() {
   const [defaultEmoji, setDefaultEmoji] = useState(() => {
     return localStorage.getItem('defaultEmoji') || '😀';
   });
+  const [candidateTerm, setCandidateTerm] = useState(() => {
+    return localStorage.getItem('candidateTerm') || '候选人';
+  });
+  const [quickOptions, setQuickOptions] = useState<string[]>(() => {
+    const saved = localStorage.getItem('quickOptions');
+    return saved ? JSON.parse(saved) : DEFAULT_QUICK_OPTIONS;
+  });
+  const [isEditingQuickOptions, setIsEditingQuickOptions] = useState(false);
+  const [newQuickOption, setNewQuickOption] = useState('');
 
   const handleSave = () => {
     localStorage.setItem('randomAvatar', JSON.stringify(randomAvatar));
     localStorage.setItem('defaultColor', defaultColor);
     localStorage.setItem('defaultEmoji', defaultEmoji);
+    localStorage.setItem('candidateTerm', candidateTerm);
+    localStorage.setItem('quickOptions', JSON.stringify(quickOptions));
+
+    // 触发自定义事件，通知其他页面更新
+    window.dispatchEvent(new Event('localStorageUpdated'));
+
     alert('设置已保存！');
+  };
+
+  const handleResetDefaults = () => {
+    if (!confirm('确定要恢复所有设置为默认值吗？这将清除所有自定义设置。')) return;
+
+    setRandomAvatar(false);
+    setDefaultColor('var(--soft-lilac)');
+    setDefaultEmoji('😀');
+    setCandidateTerm('候选人');
+    setQuickOptions(DEFAULT_QUICK_OPTIONS);
+
+    // 清除localStorage
+    localStorage.removeItem('randomAvatar');
+    localStorage.removeItem('defaultColor');
+    localStorage.removeItem('defaultEmoji');
+    localStorage.removeItem('candidateTerm');
+    localStorage.removeItem('quickOptions');
+
+    // 触发自定义事件
+    window.dispatchEvent(new Event('localStorageUpdated'));
+
+    alert('已恢复默认设置！');
+  };
+
+  const handleAddQuickOption = () => {
+    if (!newQuickOption.trim()) return;
+    if (quickOptions.length >= 8) {
+      alert('最多只能添加8个快捷选项');
+      return;
+    }
+    if (quickOptions.includes(newQuickOption)) {
+      alert('该选项已存在');
+      return;
+    }
+    setQuickOptions([...quickOptions, newQuickOption]);
+    setNewQuickOption('');
+  };
+
+  const handleRemoveQuickOption = (option: string) => {
+    if (quickOptions.length <= 1) {
+      alert('至少需要保留一个快捷选项');
+      return;
+    }
+    setQuickOptions(quickOptions.filter(o => o !== option));
   };
 
   return (
@@ -81,6 +143,171 @@ export default function Settings() {
 
       {/* Settings Container */}
       <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        {/* Candidate Term Customization */}
+        <div className="arcade-card" style={{ padding: '32px' }}>
+          <h3 style={{ fontSize: '1.5rem', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '2rem' }}>📝</span>
+            自定义称呼
+          </h3>
+          <p style={{ marginBottom: '20px', opacity: 0.8 }}>
+            自定义网页上显示的"候选人"称呼，例如可以改为"机灵鬼"、"小伙伴"等
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontFamily: '"Fredoka One", cursive', fontSize: '1rem' }}>
+                自定义称呼
+              </label>
+              <input
+                type="text"
+                value={candidateTerm}
+                onChange={(e) => setCandidateTerm(e.target.value)}
+                placeholder="例如：机灵鬼、小伙伴、幸运儿"
+                maxLength={10}
+                className="arcade-input"
+                style={{
+                  width: '100%',
+                  padding: '16px',
+                  fontSize: '1.125rem',
+                  border: '3px solid var(--deep-purple)',
+                  borderRadius: '12px',
+                  fontFamily: '"Fredoka One", cursive',
+                  background: 'white',
+                }}
+              />
+            </div>
+
+            {/* Quick Options */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.875rem', opacity: 0.7, fontFamily: '"Fredoka One", cursive' }}>
+                  快速选择 ({quickOptions.length}/8)：
+                </span>
+                <button
+                  onClick={() => setIsEditingQuickOptions(!isEditingQuickOptions)}
+                  style={{
+                    padding: '6px 12px',
+                    background: 'var(--electric-blue)',
+                    color: 'white',
+                    border: '2px solid var(--deep-purple)',
+                    borderRadius: '8px',
+                    boxShadow: '2px 2px 0 var(--deep-purple)',
+                    cursor: 'pointer',
+                    fontFamily: '"Fredoka One", cursive',
+                    fontSize: '0.75rem',
+                  }}
+                >
+                  {isEditingQuickOptions ? '✓ 完成编辑' : '✏️ 编辑'}
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                {quickOptions.map((term) => (
+                  <div
+                    key={term}
+                    style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    <button
+                      onClick={() => setCandidateTerm(term)}
+                      style={{
+                        padding: '8px 16px',
+                        background: candidateTerm === term ? 'var(--electric-blue)' : 'white',
+                        color: candidateTerm === term ? 'white' : 'var(--deep-purple)',
+                        border: '2px solid var(--deep-purple)',
+                        borderRadius: '8px',
+                        boxShadow: '2px 2px 0 var(--deep-purple)',
+                        cursor: 'pointer',
+                        fontFamily: '"Fredoka One", cursive',
+                        fontSize: '0.875rem',
+                        transition: 'all 0.2s',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.05)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = '';
+                      }}
+                    >
+                      {term}
+                    </button>
+                    {isEditingQuickOptions && (
+                      <button
+                        onClick={() => handleRemoveQuickOption(term)}
+                        style={{
+                          padding: '4px 8px',
+                          background: 'var(--neon-pink)',
+                          color: 'white',
+                          border: '2px solid var(--deep-purple)',
+                          borderRadius: '6px',
+                          boxShadow: '2px 2px 0 var(--deep-purple)',
+                          cursor: 'pointer',
+                          fontSize: '0.75rem',
+                          fontFamily: '"Fredoka One", cursive',
+                        }}
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {isEditingQuickOptions && (
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    value={newQuickOption}
+                    onChange={(e) => setNewQuickOption(e.target.value)}
+                    placeholder="添加新选项..."
+                    maxLength={10}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleAddQuickOption();
+                      }
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '10px 14px',
+                      fontSize: '0.875rem',
+                      border: '2px solid var(--deep-purple)',
+                      borderRadius: '8px',
+                      fontFamily: '"Fredoka One", cursive',
+                      background: 'white',
+                    }}
+                  />
+                  <button
+                    onClick={handleAddQuickOption}
+                    style={{
+                      padding: '10px 16px',
+                      background: 'var(--lime-green)',
+                      color: 'white',
+                      border: '2px solid var(--deep-purple)',
+                      borderRadius: '8px',
+                      boxShadow: '2px 2px 0 var(--deep-purple)',
+                      cursor: 'pointer',
+                      fontFamily: '"Fredoka One", cursive',
+                      fontSize: '0.875rem',
+                    }}
+                  >
+                    ➕ 添加
+                  </button>
+                </div>
+              )}
+            </div>
+            {candidateTerm !== '候选人' && (
+              <div style={{
+                padding: '12px',
+                background: 'var(--minty-fresh)',
+                borderRadius: '8px',
+                border: '2px solid var(--deep-purple)',
+                fontFamily: '"Fredoka One", cursive',
+                fontSize: '0.875rem',
+              }}>
+                ✨ 预览：现在网页上会显示"{candidateTerm}"而不是"候选人"
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Random Avatar Toggle */}
         <div className="arcade-card" style={{ padding: '32px' }}>
           <h3 style={{ fontSize: '1.5rem', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -253,14 +480,27 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Save Button */}
-        <div style={{ textAlign: 'center' }}>
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
           <button
             onClick={handleSave}
             className="arcade-btn arcade-btn-primary"
-            style={{ padding: '20px 64px', fontSize: '1.5rem' }}
+            style={{ padding: '20px 48px', fontSize: '1.5rem' }}
           >
             💾 保存设置
+          </button>
+          <button
+            onClick={handleResetDefaults}
+            className="arcade-btn"
+            style={{
+              padding: '20px 48px',
+              fontSize: '1.5rem',
+              background: 'white',
+              color: 'var(--neon-pink)',
+              border: '3px solid var(--neon-pink)',
+            }}
+          >
+            🔄 恢复默认
           </button>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import Avatar from '../components/Avatar';
+import { getCandidateTerm } from '../utils/candidateTerm';
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -28,10 +29,26 @@ export default function ProjectDetail() {
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [winner, setWinner] = useState<Candidate | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [candidateTerm, setCandidateTerm] = useState(() => getCandidateTerm());
 
   useEffect(() => {
     loadProject();
   }, [id]);
+
+  // 监听storage变化，实时更新候选人称呼
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setCandidateTerm(getCandidateTerm());
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('localStorageUpdated', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('localStorageUpdated', handleStorageChange);
+    };
+  }, []);
 
   const loadProject = async () => {
     if (!id) return;
@@ -58,7 +75,7 @@ export default function ProjectDetail() {
 
   const handleStart = async () => {
     if (candidates.length === 0) {
-      alert('请先添加候选人到项目中！');
+      alert(`请先添加${candidateTerm}到项目中！`);
       return;
     }
 
@@ -162,10 +179,10 @@ export default function ProjectDetail() {
           }}
         >
           <div style={{ fontSize: '80px', marginBottom: '20px' }}>👥</div>
-          <h3 style={{ fontSize: '2rem', marginBottom: '12px' }}>还没有候选人</h3>
-          <p style={{ fontSize: '1.125rem', opacity: 0.8, marginBottom: '24px' }}>请先到候选人管理页面添加候选人</p>
+          <h3 style={{ fontSize: '2rem', marginBottom: '12px' }}>还没有{candidateTerm}</h3>
+          <p style={{ fontSize: '1.125rem', opacity: 0.8, marginBottom: '24px' }}>请先到{candidateTerm}管理页面添加{candidateTerm}</p>
           <Link to="/candidates" className="arcade-btn arcade-btn-accent">
-            去添加候选人
+            去添加{candidateTerm}
           </Link>
         </div>
       ) : (

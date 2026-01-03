@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Avatar from '../components/Avatar';
+import { getCandidateTerm } from '../utils/candidateTerm';
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -39,9 +40,27 @@ export default function Candidates() {
   const [modalPhotos, setModalPhotos] = useState<CandidatePhoto[]>([]);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [currentCandidateId, setCurrentCandidateId] = useState<string | null>(null);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedPhotoIds, setSelectedPhotoIds] = useState<Set<string>>(new Set());
+  const [candidateTerm, setCandidateTerm] = useState(() => getCandidateTerm());
 
   useEffect(() => {
     loadCandidates();
+  }, []);
+
+  // 监听storage变化，实时更新候选人称呼
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setCandidateTerm(getCandidateTerm());
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('localStorageUpdated', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('localStorageUpdated', handleStorageChange);
+    };
   }, []);
 
   const loadCandidates = async () => {
@@ -83,7 +102,7 @@ export default function Candidates() {
       await loadCandidates();
     } catch (error) {
       console.error('Failed to create candidate:', error);
-      alert('创建候选人失败');
+      alert(`创建${candidateTerm}失败`);
     }
   };
 
@@ -96,19 +115,19 @@ export default function Candidates() {
       await loadCandidates();
     } catch (error) {
       console.error('Failed to update candidate:', error);
-      alert('更新候选人失败');
+      alert(`更新${candidateTerm}失败`);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('确定要删除这个候选人吗？')) return;
+    if (!confirm(`确定要删除这个${candidateTerm}吗？`)) return;
 
     try {
       await axios.delete(`${API_BASE_URL}/candidates/${id}`);
       await loadCandidates();
     } catch (error) {
       console.error('Failed to delete candidate:', error);
-      alert('删除候选人失败');
+      alert(`删除${candidateTerm}失败`);
     }
   };
 
@@ -132,6 +151,44 @@ export default function Candidates() {
       console.error('Failed to upload photos:', error);
       alert('照片上传失败');
     }
+  };
+
+  const handleBatchDelete = async () => {
+    if (selectedPhotoIds.size === 0) return;
+
+    if (!confirm(`确定要删除选中的 ${selectedPhotoIds.size} 张照片吗？`)) return;
+
+    try {
+      for (const photoId of selectedPhotoIds) {
+        await axios.delete(`${API_BASE_URL}/candidates/${currentCandidateId}/photos/${photoId}`);
+      }
+
+      if (currentCandidateId) {
+        await loadCandidatePhotos(currentCandidateId);
+        await loadCandidates();
+      }
+
+      // 重置选择状态
+      setSelectedPhotoIds(new Set());
+      setSelectionMode(false);
+
+      alert(`成功删除 ${selectedPhotoIds.size} 张照片！`);
+    } catch (error) {
+      console.error('Failed to delete photos:', error);
+      alert('删除照片失败');
+    }
+  };
+
+  const togglePhotoSelection = (photoId: string) => {
+    setSelectedPhotoIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(photoId)) {
+        newSet.delete(photoId);
+      } else {
+        newSet.add(photoId);
+      }
+      return newSet;
+    });
   };
 
   if (loading) {
@@ -167,7 +224,7 @@ export default function Candidates() {
 
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '48px', position: 'relative' }}>
-        <h1 style={{ marginBottom: '16px' }}>👥 候选人管理</h1>
+        <h1 style={{ marginBottom: '16px' }}>👥 {candidateTerm}管理</h1>
         <p style={{ fontSize: '1.25rem', color: 'var(--deep-purple)', opacity: 0.8, fontFamily: '"Fredoka One", cursive' }}>
           添加和管理随机选择的参与者
         </p>
@@ -184,8 +241,8 @@ export default function Candidates() {
           }}
         >
           <div style={{ fontSize: '80px', marginBottom: '20px', animation: 'bounce 2s ease-in-out infinite' }}>👤</div>
-          <h3 style={{ fontSize: '2rem', marginBottom: '12px' }}>还没有候选人</h3>
-          <p style={{ fontSize: '1.125rem', opacity: 0.8 }}>点击下方按钮添加第一个候选人</p>
+          <h3 style={{ fontSize: '2rem', marginBottom: '12px' }}>还没有{candidateTerm}</h3>
+          <p style={{ fontSize: '1.125rem', opacity: 0.8 }}>点击下方按钮添加第一个{candidateTerm}</p>
         </div>
       )}
 
@@ -209,7 +266,7 @@ export default function Candidates() {
                   onChange={(e) => setEditName(e.target.value)}
                   className="arcade-input"
                   style={{ marginBottom: '20px' }}
-                  placeholder="候选人姓名"
+                  placeholder={`${candidateTerm}姓名`}
                   autoFocus
                 />
                 <div style={{ display: 'flex', gap: '12px' }}>
@@ -332,40 +389,58 @@ export default function Candidates() {
                 <h3 style={{ fontSize: '1.75rem', marginBottom: '8px', textAlign: 'center' }}>{candidate.name}</h3>
                 <div style={{ textAlign: 'center' }}>
                   <span className="arcade-tag arcade-tag-blue">
-                    候选人 #{index + 1}
+                    {candidateTerm} #{index + 1}
                   </span>
                 </div>
 
-                {/* Photo Info */}
-                {candidate.photo_url && candidate.photo_url.trim() !== '' && (
-                  <div style={{ marginTop: '12px', textAlign: 'center' }}>
-                    <button
-                      onClick={async () => {
-                        if (!confirm('确定要移除照片吗？')) return;
-                        try {
-                          await axios.put(`${API_BASE_URL}/candidates/${candidate.id}`, { photo_url: '' });
-                          await loadCandidates();
-                        } catch (error) {
-                          console.error('Failed to remove photo:', error);
-                          alert('移除照片失败');
-                        }
-                      }}
-                      style={{
-                        padding: '6px 12px',
-                        background: 'var(--sunset-orange)',
-                        color: 'white',
-                        border: '2px solid var(--deep-purple)',
-                        borderRadius: '8px',
-                        boxShadow: '2px 2px 0 var(--deep-purple)',
-                        cursor: 'pointer',
-                        fontFamily: '"Fredoka One", cursive',
-                        fontSize: '0.75rem',
-                      }}
-                    >
-                      移除照片
-                    </button>
-                  </div>
-                )}
+                {/* Photo Gallery Button - Always Visible */}
+                <div style={{ marginTop: '16px' }}>
+                  <label
+                    htmlFor={`gallery-upload-${candidate.id}`}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      width: '100%',
+                      padding: '12px 16px',
+                      background: candidatePhotos[candidate.id] && candidatePhotos[candidate.id].length > 0
+                        ? 'linear-gradient(135deg, var(--electric-blue) 0%, var(--minty-fresh) 100%)'
+                        : 'linear-gradient(135deg, var(--neon-pink) 0%, var(--sunset-orange) 100%)',
+                      color: 'white',
+                      border: '3px solid var(--deep-purple)',
+                      borderRadius: '12px',
+                      boxShadow: '3px 3px 0 var(--deep-purple)',
+                      cursor: 'pointer',
+                      fontFamily: '"Fredoka One", cursive',
+                      fontSize: '1rem',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.05)';
+                      e.currentTarget.style.boxShadow = '4px 4px 0 var(--deep-purple)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = '';
+                      e.currentTarget.style.boxShadow = '3px 3px 0 var(--deep-purple)';
+                    }}
+                  >
+                    <span style={{ fontSize: '1.25rem' }}>📸</span>
+                    <span>
+                      {candidatePhotos[candidate.id] && candidatePhotos[candidate.id].length > 0
+                        ? `查看相册 (${candidatePhotos[candidate.id].length})`
+                        : '添加照片'}
+                    </span>
+                  </label>
+                  <input
+                    id={`gallery-upload-${candidate.id}`}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    style={{ display: 'none' }}
+                    onChange={(e) => handlePhotoUpload(candidate.id, e.target.files)}
+                  />
+                </div>
 
                 {/* Photo Gallery */}
                 {candidatePhotos[candidate.id] && candidatePhotos[candidate.id].length > 0 && (
@@ -488,7 +563,7 @@ export default function Candidates() {
           >
             <div style={{ fontSize: '64px', marginBottom: '16px', animation: 'bounce 2s ease-in-out infinite' }}>➕</div>
             <span style={{ fontSize: '1.5rem', fontFamily: '"Fredoka One", cursive', color: 'var(--sunset-orange)' }}>
-              添加候选人
+              添加{candidateTerm}
             </span>
           </button>
         ) : (
@@ -501,13 +576,13 @@ export default function Candidates() {
             }}
           >
             <form onSubmit={handleCreate}>
-              <h3 style={{ marginBottom: '24px', textAlign: 'center' }}>✨ 添加新候选人</h3>
+              <h3 style={{ marginBottom: '24px', textAlign: 'center' }}>✨ 添加新{candidateTerm}</h3>
 
               <input
                 type="text"
                 value={newCandidateName}
                 onChange={(e) => setNewCandidateName(e.target.value)}
-                placeholder="候选人姓名"
+                placeholder={`${candidateTerm}姓名`}
                 className="arcade-input"
                 style={{ marginBottom: '20px' }}
                 autoFocus
@@ -579,20 +654,61 @@ export default function Candidates() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                position: 'relative',
               }}
             >
-              <img
-                src={`http://localhost:8080${modalPhotos[currentPhotoIndex]?.photo_url}`}
-                alt="Enlarged photo"
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: '80vh',
-                  borderRadius: '16px',
-                  border: '4px solid var(--deep-purple)',
-                  boxShadow: '8px 8px 0 var(--deep-purple)',
-                  objectFit: 'contain',
+              <div
+                onClick={() => {
+                  if (selectionMode) {
+                    togglePhotoSelection(modalPhotos[currentPhotoIndex].id);
+                  }
                 }}
-              />
+                style={{
+                  position: 'relative',
+                  cursor: selectionMode ? 'pointer' : 'default',
+                }}
+              >
+                <img
+                  src={`http://localhost:8080${modalPhotos[currentPhotoIndex]?.photo_url}`}
+                  alt="Enlarged photo"
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '80vh',
+                    borderRadius: '16px',
+                    border: selectedPhotoIds.has(modalPhotos[currentPhotoIndex]?.id || '')
+                      ? '6px solid var(--neon-pink)'
+                      : '4px solid var(--deep-purple)',
+                    boxShadow: selectedPhotoIds.has(modalPhotos[currentPhotoIndex]?.id || '')
+                      ? '12px 12px 0 var(--neon-pink)'
+                      : '8px 8px 0 var(--deep-purple)',
+                    objectFit: 'contain',
+                    transition: 'all 0.2s',
+                  }}
+                />
+                {selectionMode && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '20px',
+                      left: '20px',
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      background: selectedPhotoIds.has(modalPhotos[currentPhotoIndex]?.id || '')
+                        ? 'var(--neon-pink)'
+                        : 'white',
+                      border: '4px solid var(--deep-purple)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '24px',
+                      boxShadow: '3px 3px 0 var(--deep-purple)',
+                    }}
+                  >
+                    {selectedPhotoIds.has(modalPhotos[currentPhotoIndex]?.id || '') ? '✓' : ''}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Side Panel */}
@@ -608,7 +724,7 @@ export default function Candidates() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <button
                   onClick={() => setCurrentPhotoIndex((prev) => (prev > 0 ? prev - 1 : modalPhotos.length - 1))}
-                  disabled={modalPhotos.length <= 1}
+                  disabled={modalPhotos.length <= 1 || selectionMode}
                   style={{
                     padding: '12px',
                     background: 'var(--electric-blue)',
@@ -616,17 +732,17 @@ export default function Candidates() {
                     border: '2px solid var(--deep-purple)',
                     borderRadius: '12px',
                     boxShadow: '3px 3px 0 var(--deep-purple)',
-                    cursor: modalPhotos.length <= 1 ? 'not-allowed' : 'pointer',
+                    cursor: modalPhotos.length <= 1 || selectionMode ? 'not-allowed' : 'pointer',
                     fontFamily: '"Fredoka One", cursive',
                     fontSize: '1rem',
-                    opacity: modalPhotos.length <= 1 ? 0.5 : 1,
+                    opacity: modalPhotos.length <= 1 || selectionMode ? 0.5 : 1,
                   }}
                 >
                   ⬅️ 上一张
                 </button>
                 <button
                   onClick={() => setCurrentPhotoIndex((prev) => (prev < modalPhotos.length - 1 ? prev + 1 : 0))}
-                  disabled={modalPhotos.length <= 1}
+                  disabled={modalPhotos.length <= 1 || selectionMode}
                   style={{
                     padding: '12px',
                     background: 'var(--electric-blue)',
@@ -634,15 +750,76 @@ export default function Candidates() {
                     border: '2px solid var(--deep-purple)',
                     borderRadius: '12px',
                     boxShadow: '3px 3px 0 var(--deep-purple)',
-                    cursor: modalPhotos.length <= 1 ? 'not-allowed' : 'pointer',
+                    cursor: modalPhotos.length <= 1 || selectionMode ? 'not-allowed' : 'pointer',
                     fontFamily: '"Fredoka One", cursive',
                     fontSize: '1rem',
-                    opacity: modalPhotos.length <= 1 ? 0.5 : 1,
+                    opacity: modalPhotos.length <= 1 || selectionMode ? 0.5 : 1,
                   }}
                 >
                   ➡️ 下一张
                 </button>
               </div>
+
+              {/* Selection Mode Toggle */}
+              <button
+                onClick={() => {
+                  setSelectionMode(!selectionMode);
+                  setSelectedPhotoIds(new Set());
+                }}
+                style={{
+                  padding: '12px',
+                  background: selectionMode ? 'var(--sunset-orange)' : 'var(--lime-green)',
+                  color: 'white',
+                  border: '2px solid var(--deep-purple)',
+                  borderRadius: '12px',
+                  boxShadow: '3px 3px 0 var(--deep-purple)',
+                  cursor: 'pointer',
+                  fontFamily: '"Fredoka One", cursive',
+                  fontSize: '1rem',
+                }}
+              >
+                {selectionMode ? '✖️ 取消选择' : '☑️ 批量删除'}
+              </button>
+
+              {/* Selection Info & Delete Button */}
+              {selectionMode && (
+                <>
+                  {selectedPhotoIds.size > 0 && (
+                    <div
+                      style={{
+                        textAlign: 'center',
+                        padding: '12px',
+                        background: 'var(--neon-pink)',
+                        borderRadius: '12px',
+                        border: '2px solid var(--deep-purple)',
+                        fontFamily: '"Fredoka One", cursive',
+                        fontSize: '1rem',
+                        color: 'white',
+                      }}
+                    >
+                      已选 {selectedPhotoIds.size} 张
+                    </div>
+                  )}
+                  <button
+                    onClick={handleBatchDelete}
+                    disabled={selectedPhotoIds.size === 0}
+                    style={{
+                      padding: '16px',
+                      background: selectedPhotoIds.size > 0 ? 'var(--sunset-orange)' : 'white',
+                      color: selectedPhotoIds.size > 0 ? 'white' : 'var(--deep-purple)',
+                      border: '2px solid var(--deep-purple)',
+                      borderRadius: '12px',
+                      boxShadow: '3px 3px 0 var(--deep-purple)',
+                      cursor: selectedPhotoIds.size > 0 ? 'pointer' : 'not-allowed',
+                      fontFamily: '"Fredoka One", cursive',
+                      fontSize: '1rem',
+                      opacity: selectedPhotoIds.size > 0 ? 1 : 0.5,
+                    }}
+                  >
+                    🗑️ 删除选中
+                  </button>
+                </>
+              )}
 
               {/* Photo Counter */}
               <div
@@ -660,8 +837,8 @@ export default function Candidates() {
                 {currentPhotoIndex + 1} / {modalPhotos.length}
               </div>
 
-              {/* Set as Avatar Button */}
-              {!modalPhotos[currentPhotoIndex]?.is_avatar && (
+              {/* Set as Avatar Button - Hidden in selection mode */}
+              {!selectionMode && !modalPhotos[currentPhotoIndex]?.is_avatar && (
                 <button
                   onClick={async () => {
                     if (!currentCandidateId) return;
@@ -700,7 +877,7 @@ export default function Candidates() {
                 </button>
               )}
 
-              {modalPhotos[currentPhotoIndex]?.is_avatar && (
+              {!selectionMode && modalPhotos[currentPhotoIndex]?.is_avatar && (
                 <div
                   style={{
                     padding: '16px',

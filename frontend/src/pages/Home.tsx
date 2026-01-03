@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { getCandidateTerm } from '../utils/candidateTerm';
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -27,9 +28,25 @@ export default function Home() {
   const [newProjectName, setNewProjectName] = useState('');
   const [selectedCandidateIds, setSelectedCandidateIds] = useState<string[]>([]);
   const [selectedProjectIds, setSelectedProjectIds] = useState<Set<string>>(new Set());
+  const [candidateTerm, setCandidateTerm] = useState(() => getCandidateTerm());
 
   useEffect(() => {
     loadData();
+  }, []);
+
+  // 监听storage变化，实时更新候选人称呼
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setCandidateTerm(getCandidateTerm());
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('localStorageUpdated', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('localStorageUpdated', handleStorageChange);
+    };
   }, []);
 
   const loadData = async () => {
@@ -67,7 +84,7 @@ export default function Home() {
     if (!newProjectName.trim()) return;
 
     if (selectedCandidateIds.length === 0) {
-      alert('请至少选择一个候选人！');
+      alert(`请至少选择一个${candidateTerm}！`);
       return;
     }
 
@@ -330,12 +347,12 @@ export default function Home() {
 
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ display: 'block', marginBottom: '12px', fontFamily: "Fredoka One, cursive", fontSize: '1.125rem' }}>
-                  选择候选人
+                  选择{candidateTerm}
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                   {candidates.length === 0 ? (
                     <p style={{ padding: '16px', background: 'white', borderRadius: '12px', fontSize: '0.875rem', opacity: 0.8 }}>
-                      还没有候选人，请先去候选人管理页面添加
+                      还没有{candidateTerm}，请先去{candidateTerm}管理页面添加
                     </p>
                   ) : (
                     candidates.map((candidate) => (

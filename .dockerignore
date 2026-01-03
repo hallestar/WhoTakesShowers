@@ -1,0 +1,61 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+deploy/
+
+# 文档
+*.md
+!README.md
+docs/
+.claude/
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 依赖
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Go
+backend/*.exe
+backend/*.test
+backend/*.out
+backend/whotakesshowers
+
+# 数据（运行时生成）
+backend/data/
+backend/uploads/
+data/
+uploads/
+
+# 日志
+*.log
+logs/
+
+# 测试
+coverage/
+*.test
+*.prof
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# 部署相关
+deploy.config.sh
+deploy.sh
+build-production.sh
+deploy-all.sh

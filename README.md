@@ -117,9 +117,74 @@ WhoTakesShowers/
 - [x] 项目管理（CRUD）
 - [x] 随机选择动画
 - [x] 历史记录查看
-- [ ] 照片上传功能（后端已支持，前端待实现）
+- [x] 照片上传功能
+- [x] 候选人相册系统
+- [x] 自定义称呼
+- [x] 批量删除照片
 - [ ] 多用户支持
 - [ ] 数据导出功能
+
+## 🚀 部署到生产环境
+
+本项目支持使用 rsync 通过内网快速部署到生产服务器。
+
+### 快速部署
+
+```bash
+# 1. 一键部署（推荐）
+./deploy-all.sh
+
+# 2. 或分步部署
+./build-production.sh  # 先构建
+./deploy.sh            # 再部署
+```
+
+### 首次部署
+
+详细步骤请参考 [部署指南 (DEPLOYMENT.md)](./DEPLOYMENT.md)
+
+简要步骤：
+
+1. **初始化服务器**
+   ```bash
+   # 在服务器上运行
+   sudo bash init-server.sh
+   ```
+
+2. **配置免密登录**
+   ```bash
+   ssh-copy-id whotakesshowers@<服务器IP>
+   ```
+
+3. **修改部署配置**
+   ```bash
+   vim deploy.config.sh
+   # 设置服务器IP和路径
+   ```
+
+4. **一键部署**
+   ```bash
+   ./deploy-all.sh
+   ```
+
+### 部署架构
+
+```
+开发机 ──rsync──> 内网服务器
+                       ├─ /var/www/whotakesshowers (前端)
+                       ├─ /opt/whotakesshowers (后端)
+                       └─ Nginx (反向代理)
+```
+
+### 部署文件
+
+- `deploy.config.sh` - 部署配置
+- `deploy.sh` - 部署脚本
+- `build-production.sh` - 构建脚本
+- `deploy-all.sh` - 一键部署脚本
+- `init-server.sh` - 服务器初始化
+- `DEPLOYMENT.md` - 详细部署文档
+- `deploy/` - 服务器配置文件目录
 
 ## License
 
