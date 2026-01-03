@@ -22,6 +22,12 @@ func RegisterRoutes(r *gin.RouterGroup, db *gorm.DB) {
 	r.DELETE("/candidates/:id", DeleteCandidate)
 	r.POST("/candidates/:id/photo", UploadCandidatePhoto)
 
+	// 候选人照片相关
+	r.GET("/candidates/:id/photos", ListCandidatePhotos)
+	r.POST("/candidates/:id/photos", UploadCandidatePhotos)
+	r.PUT("/candidates/:id/avatar", SetCandidateAvatar)
+	r.DELETE("/candidates/:id/photos/:photo_id", DeleteCandidatePhoto)
+
 	// 历史记录相关
 	r.GET("/history", ListHistory)
 

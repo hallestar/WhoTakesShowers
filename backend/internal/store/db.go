@@ -39,6 +39,7 @@ func InitDB() (*gorm.DB, error) {
 		&model.User{},
 		&model.Project{},
 		&model.Candidate{},
+		&model.CandidatePhoto{},
 		&model.History{},
 	); err != nil {
 		return nil, fmt.Errorf("failed to migrate database: %w", err)

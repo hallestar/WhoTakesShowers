@@ -59,6 +59,23 @@ func (c *Candidate) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
+// CandidatePhoto 候选人照片模型
+type CandidatePhoto struct {
+	ID           uuid.UUID `gorm:"type:uuid;primary_key" json:"id"`
+	CandidateID  uuid.UUID `gorm:"type:uuid;not null" json:"candidate_id"`
+	PhotoURL     string    `gorm:"type:varchar(500);not null" json:"photo_url"`
+	IsAvatar     bool      `gorm:"default:false" json:"is_avatar"`
+	CreatedAt    time.Time `json:"created_at"`
+}
+
+// BeforeCreate GORM hook
+func (cp *CandidatePhoto) BeforeCreate(tx *gorm.DB) error {
+	if cp.ID == uuid.Nil {
+		cp.ID = uuid.New()
+	}
+	return nil
+}
+
 // History 历史记录模型
 type History struct {
 	ID           uuid.UUID `gorm:"type:uuid;primary_key" json:"id"`

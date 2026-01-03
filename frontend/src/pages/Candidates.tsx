@@ -13,18 +13,32 @@ interface Candidate {
   updated_at: string;
 }
 
+interface CandidatePhoto {
+  id: string;
+  candidate_id: string;
+  photo_url: string;
+  is_avatar: boolean;
+  created_at: string;
+}
+
 interface CandidateWithPhotos extends Candidate {
-  photos?: string[];
-  default_photo_url?: string;
+  photos?: CandidatePhoto[];
 }
 
 export default function Candidates() {
   const [candidates, setCandidates] = useState<CandidateWithPhotos[]>([]);
+  const [candidatePhotos, setCandidatePhotos] = useState<Record<string, CandidatePhoto[]>>({});
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newCandidateName, setNewCandidateName] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
+
+  // 照片模态框状态
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [modalPhotos, setModalPhotos] = useState<CandidatePhoto[]>([]);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [currentCandidateId, setCurrentCandidateId] = useState<string | null>(null);
 
   useEffect(() => {
     loadCandidates();
@@ -34,10 +48,27 @@ export default function Candidates() {
     try {
       const response = await axios.get<Candidate[]>(`${API_BASE_URL}/candidates`);
       setCandidates(response.data);
+
+      // 加载每个候选人的照片
+      for (const candidate of response.data) {
+        await loadCandidatePhotos(candidate.id);
+      }
     } catch (error) {
       console.error('Failed to load candidates:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadCandidatePhotos = async (candidateId: string) => {
+    try {
+      const response = await axios.get<CandidatePhoto[]>(`${API_BASE_URL}/candidates/${candidateId}/photos`);
+      setCandidatePhotos(prev => ({
+        ...prev,
+        [candidateId]: response.data,
+      }));
+    } catch (error) {
+      console.error('Failed to load candidate photos:', error);
     }
   };
 
@@ -85,16 +116,20 @@ export default function Candidates() {
     if (!files || files.length === 0) return;
 
     const formData = new FormData();
-    formData.append('photo', files[0]);
+    // 支持多张照片上传
+    for (let i = 0; i < files.length; i++) {
+      formData.append('photos', files[i]);
+    }
 
     try {
-      await axios.post(`${API_BASE_URL}/candidates/${id}/photo`, formData, {
+      await axios.post(`${API_BASE_URL}/candidates/${id}/photos`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
+      await loadCandidatePhotos(id);
       await loadCandidates();
-      alert('照片上传成功！');
+      alert(`成功上传 ${files.length} 张照片！`);
     } catch (error) {
-      console.error('Failed to upload photo:', error);
+      console.error('Failed to upload photos:', error);
       alert('照片上传失败');
     }
   };
@@ -235,6 +270,7 @@ export default function Candidates() {
                       id={`photo-upload-${candidate.id}`}
                       type="file"
                       accept="image/*"
+                      multiple
                       style={{ display: 'none' }}
                       onChange={(e) => handlePhotoUpload(candidate.id, e.target.files)}
                     />
@@ -330,6 +366,97 @@ export default function Candidates() {
                     </button>
                   </div>
                 )}
+
+                {/* Photo Gallery */}
+                {candidatePhotos[candidate.id] && candidatePhotos[candidate.id].length > 0 && (
+                  <div style={{ marginTop: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '0.875rem', fontFamily: '"Fredoka One", cursive', color: 'var(--deep-purple)' }}>
+                        📸 相册 ({candidatePhotos[candidate.id].length})
+                      </span>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                      {candidatePhotos[candidate.id].slice(0, 6).map((photo, photoIndex) => (
+                        <div
+                          key={photo.id}
+                          onClick={() => {
+                            setModalPhotos(candidatePhotos[candidate.id] || []);
+                            setCurrentPhotoIndex(photoIndex);
+                            setCurrentCandidateId(candidate.id);
+                            setShowPhotoModal(true);
+                          }}
+                          style={{
+                            position: 'relative',
+                            aspectRatio: '1',
+                            borderRadius: '8px',
+                            overflow: 'hidden',
+                            border: '2px solid var(--deep-purple)',
+                            boxShadow: '2px 2px 0 var(--deep-purple)',
+                            cursor: 'pointer',
+                            transition: 'transform 0.2s',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'scale(1.05)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = '';
+                          }}
+                        >
+                          <img
+                            src={`http://localhost:8080${photo.photo_url}`}
+                            alt={`Photo ${photoIndex + 1}`}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                            }}
+                          />
+                          {photo.is_avatar && (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                top: '2px',
+                                right: '2px',
+                                background: 'var(--electric-blue)',
+                                color: 'white',
+                                fontSize: '10px',
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                fontFamily: '"Fredoka One", cursive',
+                              }}
+                            >
+                              头像
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      {candidatePhotos[candidate.id].length > 6 && (
+                        <div
+                          onClick={() => {
+                            setModalPhotos(candidatePhotos[candidate.id] || []);
+                            setCurrentPhotoIndex(0);
+                            setCurrentCandidateId(candidate.id);
+                            setShowPhotoModal(true);
+                          }}
+                          style={{
+                            aspectRatio: '1',
+                            borderRadius: '8px',
+                            border: '2px dashed var(--deep-purple)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontFamily: '"Fredoka One", cursive',
+                            fontSize: '0.875rem',
+                            color: 'var(--deep-purple)',
+                          }}
+                        >
+                          +{candidatePhotos[candidate.id].length - 6}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -415,6 +542,204 @@ export default function Candidates() {
           </div>
         )}
       </div>
+
+      {/* Photo Modal */}
+      {showPhotoModal && modalPhotos.length > 0 && (
+        <div
+          onClick={() => setShowPhotoModal(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(99, 71, 148, 0.8)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: '900px',
+              width: '100%',
+              maxHeight: '90vh',
+              display: 'flex',
+              gap: '24px',
+            }}
+          >
+            {/* Photo Display */}
+            <div
+              style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <img
+                src={`http://localhost:8080${modalPhotos[currentPhotoIndex]?.photo_url}`}
+                alt="Enlarged photo"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '80vh',
+                  borderRadius: '16px',
+                  border: '4px solid var(--deep-purple)',
+                  boxShadow: '8px 8px 0 var(--deep-purple)',
+                  objectFit: 'contain',
+                }}
+              />
+            </div>
+
+            {/* Side Panel */}
+            <div
+              style={{
+                width: '200px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+              }}
+            >
+              {/* Navigation Buttons */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <button
+                  onClick={() => setCurrentPhotoIndex((prev) => (prev > 0 ? prev - 1 : modalPhotos.length - 1))}
+                  disabled={modalPhotos.length <= 1}
+                  style={{
+                    padding: '12px',
+                    background: 'var(--electric-blue)',
+                    color: 'white',
+                    border: '2px solid var(--deep-purple)',
+                    borderRadius: '12px',
+                    boxShadow: '3px 3px 0 var(--deep-purple)',
+                    cursor: modalPhotos.length <= 1 ? 'not-allowed' : 'pointer',
+                    fontFamily: '"Fredoka One", cursive',
+                    fontSize: '1rem',
+                    opacity: modalPhotos.length <= 1 ? 0.5 : 1,
+                  }}
+                >
+                  ⬅️ 上一张
+                </button>
+                <button
+                  onClick={() => setCurrentPhotoIndex((prev) => (prev < modalPhotos.length - 1 ? prev + 1 : 0))}
+                  disabled={modalPhotos.length <= 1}
+                  style={{
+                    padding: '12px',
+                    background: 'var(--electric-blue)',
+                    color: 'white',
+                    border: '2px solid var(--deep-purple)',
+                    borderRadius: '12px',
+                    boxShadow: '3px 3px 0 var(--deep-purple)',
+                    cursor: modalPhotos.length <= 1 ? 'not-allowed' : 'pointer',
+                    fontFamily: '"Fredoka One", cursive',
+                    fontSize: '1rem',
+                    opacity: modalPhotos.length <= 1 ? 0.5 : 1,
+                  }}
+                >
+                  ➡️ 下一张
+                </button>
+              </div>
+
+              {/* Photo Counter */}
+              <div
+                style={{
+                  textAlign: 'center',
+                  padding: '12px',
+                  background: 'white',
+                  borderRadius: '12px',
+                  border: '2px solid var(--deep-purple)',
+                  fontFamily: '"Fredoka One", cursive',
+                  fontSize: '1rem',
+                  color: 'var(--deep-purple)',
+                }}
+              >
+                {currentPhotoIndex + 1} / {modalPhotos.length}
+              </div>
+
+              {/* Set as Avatar Button */}
+              {!modalPhotos[currentPhotoIndex]?.is_avatar && (
+                <button
+                  onClick={async () => {
+                    if (!currentCandidateId) return;
+                    try {
+                      await axios.put(`${API_BASE_URL}/candidates/${currentCandidateId}/avatar`, {
+                        photo_id: modalPhotos[currentPhotoIndex].id,
+                      });
+                      await loadCandidatePhotos(currentCandidateId);
+                      await loadCandidates();
+                      alert('头像设置成功！');
+                    } catch (error) {
+                      console.error('Failed to set avatar:', error);
+                      alert('设置头像失败');
+                    }
+                  }}
+                  style={{
+                    padding: '16px',
+                    background: 'var(--neon-pink)',
+                    color: 'white',
+                    border: '2px solid var(--deep-purple)',
+                    borderRadius: '12px',
+                    boxShadow: '3px 3px 0 var(--deep-purple)',
+                    cursor: 'pointer',
+                    fontFamily: '"Fredoka One", cursive',
+                    fontSize: '1rem',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = '';
+                  }}
+                >
+                  ⭐ 设为头像
+                </button>
+              )}
+
+              {modalPhotos[currentPhotoIndex]?.is_avatar && (
+                <div
+                  style={{
+                    padding: '16px',
+                    background: 'var(--minty-fresh)',
+                    color: 'white',
+                    border: '2px solid var(--deep-purple)',
+                    borderRadius: '12px',
+                    boxShadow: '3px 3px 0 var(--deep-purple)',
+                    textAlign: 'center',
+                    fontFamily: '"Fredoka One", cursive',
+                    fontSize: '1rem',
+                  }}
+                >
+                  ✅ 当前头像
+                </div>
+              )}
+
+              {/* Close Button */}
+              <button
+                onClick={() => setShowPhotoModal(false)}
+                style={{
+                  padding: '12px',
+                  background: 'var(--sunset-orange)',
+                  color: 'white',
+                  border: '2px solid var(--deep-purple)',
+                  borderRadius: '12px',
+                  boxShadow: '3px 3px 0 var(--deep-purple)',
+                  cursor: 'pointer',
+                  fontFamily: '"Fredoka One", cursive',
+                  fontSize: '1rem',
+                  marginTop: 'auto',
+                }}
+              >
+                ✖️ 关闭
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
