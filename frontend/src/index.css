@@ -1,0 +1,346 @@
+@import url('https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Playful Arcade Color Palette */
+  --electric-blue: #00D4FF;
+  --neon-pink: #FF2E93;
+  --lime-green: #CCFF00;
+  --sunset-orange: #FF6B00;
+  --creamy-white: #FFFEF5;
+  --deep-purple: #1A1A2E;
+  --soft-lilac: #E8E4FF;
+  --minty-fresh: #D4FFEA;
+  --peachy: #FFE8D4;
+
+  /* Shadow offsets */
+  --shadow-offset: 4px;
+  --shadow-offset-lg: 8px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--creamy-white);
+  background-image:
+    radial-gradient(circle, var(--electric-blue) 1px, transparent 1px),
+    radial-gradient(circle, var(--neon-pink) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+  min-height: 100vh;
+  color: var(--deep-purple);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Bungee Shade', cursive;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: 3rem;
+  line-height: 1.1;
+  color: var(--neon-pink);
+  text-shadow: 3px 3px 0 var(--electric-blue);
+}
+
+h2 {
+  font-size: 2.5rem;
+  color: var(--sunset-orange);
+  text-shadow: 2px 2px 0 var(--lime-green);
+}
+
+h3 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.5rem;
+  color: var(--deep-purple);
+}
+
+/* Animated Wave Separator */
+.wave-separator {
+  position: relative;
+  height: 60px;
+  margin: 32px 0;
+  overflow: hidden;
+}
+
+.wave-separator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--electric-blue) 0px,
+    var(--electric-blue) 20px,
+    var(--neon-pink) 20px,
+    var(--neon-pink) 40px,
+    var(--lime-green) 40px,
+    var(--lime-green) 60px
+  );
+  animation: waveScroll 8s linear infinite;
+}
+
+@keyframes waveScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(40px); }
+}
+
+/* Playful Card Style */
+.arcade-card {
+  background: white;
+  border: 3px solid var(--deep-purple);
+  border-radius: 16px;
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--deep-purple);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.arcade-card::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 12px;
+  height: 12px;
+  background: var(--electric-blue);
+  border: 2px solid var(--deep-purple);
+  border-radius: 50%;
+}
+
+.arcade-card:hover {
+  transform: translateY(-8px) rotate(-1deg);
+  box-shadow: var(--shadow-offset-lg) var(--shadow-offset-lg) 0 var(--deep-purple);
+}
+
+.arcade-card:active {
+  transform: translateY(-4px);
+  box-shadow: 2px 2px 0 var(--deep-purple);
+}
+
+/* Primary Button Style */
+.arcade-btn {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.25rem;
+  padding: 16px 32px;
+  border: 3px solid var(--deep-purple);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--deep-purple);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.arcade-btn-primary {
+  background: var(--neon-pink);
+  color: white;
+}
+
+.arcade-btn-primary:hover {
+  background: var(--electric-blue);
+  transform: scale(1.08);
+  box-shadow: var(--shadow-offset-lg) var(--shadow-offset-lg) 0 var(--deep-purple);
+}
+
+.arcade-btn-secondary {
+  background: var(--lime-green);
+  color: var(--deep-purple);
+}
+
+.arcade-btn-secondary:hover {
+  background: var(--sunset-orange);
+  color: white;
+  transform: scale(1.08);
+}
+
+.arcade-btn-accent {
+  background: var(--electric-blue);
+  color: white;
+}
+
+.arcade-btn-accent:hover {
+  background: var(--neon-pink);
+  transform: scale(1.08);
+}
+
+/* Animated Background Blob */
+.blob-bg {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.3;
+  animation: blobFloat 8s ease-in-out infinite;
+  z-index: -1;
+}
+
+.blob-1 {
+  width: 400px;
+  height: 400px;
+  background: var(--electric-blue);
+  top: -100px;
+  right: -100px;
+}
+
+.blob-2 {
+  width: 300px;
+  height: 300px;
+  background: var(--neon-pink);
+  bottom: -50px;
+  left: -50px;
+  animation-delay: -4s;
+}
+
+.blob-3 {
+  width: 250px;
+  height: 250px;
+  background: var(--lime-green);
+  top: 50%;
+  right: 20%;
+  animation-delay: -2s;
+}
+
+@keyframes blobFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+/* Loading Animation */
+.arcade-loader {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
+.arcade-loader span {
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--deep-purple);
+  border-radius: 50%;
+  animation: bounce 0.6s ease-in-out infinite;
+}
+
+.arcade-loader span:nth-child(1) { animation-delay: 0s; background: var(--electric-blue); }
+.arcade-loader span:nth-child(2) { animation-delay: 0.2s; background: var(--neon-pink); }
+.arcade-loader span:nth-child(3) { animation-delay: 0.4s; background: var(--lime-green); }
+
+/* Avatar Animation */
+.avatar-animated {
+  animation: pulse 2s ease-in-out infinite !important;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+/* Input Style */
+.arcade-input {
+  width: 100%;
+  padding: 16px 20px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  border: 3px solid var(--deep-purple);
+  border-radius: 16px;
+  outline: none;
+  background: white;
+  color: var(--deep-purple);
+  transition: all 0.2s;
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--deep-purple);
+}
+
+.arcade-input:focus {
+  box-shadow: var(--shadow-offset-lg) var(--shadow-offset-lg) 0 var(--deep-purple);
+  background: var(--soft-lilac);
+}
+
+.arcade-input::placeholder {
+  color: #9CA3AF;
+  font-weight: 400;
+}
+
+/* Navigation Bar */
+.arcade-nav {
+  background: white;
+  border-bottom: 3px solid var(--deep-purple);
+  box-shadow: 0 4px 0 var(--deep-purple);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+/* Badge/Tag Style */
+.arcade-tag {
+  display: inline-block;
+  padding: 8px 16px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 0.875rem;
+  border: 2px solid var(--deep-purple);
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 var(--deep-purple);
+  transition: all 0.2s;
+}
+
+.arcade-tag-blue { background: var(--electric-blue); color: white; }
+.arcade-tag-pink { background: var(--neon-pink); color: white; }
+.arcade-tag-green { background: var(--lime-green); color: var(--deep-purple); }
+.arcade-tag-orange { background: var(--sunset-orange); color: white; }
+
+/* Staggered Animation for Lists */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-in {
+  animation: slideInUp 0.5s ease-out forwards;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 16px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--creamy-white);
+  border: 2px solid var(--deep-purple);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neon-pink);
+  border: 2px solid var(--deep-purple);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--electric-blue);
+}
