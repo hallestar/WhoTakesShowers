@@ -18,7 +18,7 @@ RUN npm run build
 # ========================================
 # 阶段2: 构建后端
 # ========================================
-FROM golang:1.21-alpine AS backend-builder
+FROM golang:1.25 AS backend-builder
 
 WORKDIR /backend
 
@@ -33,30 +33,35 @@ RUN CGO_ENABLED=1 GOOS=linux go build -o whotakesshowers cmd/server/main.go
 # ========================================
 # 阶段3: 运行阶段
 # ========================================
-FROM alpine:latest
+# FROM alpine:latest
+FROM debian:bookworm
 
 # 安装必要的运行时依赖
-RUN apk add --no-cache \
-    sqlite \
-    ca-certificates \
-    tzdata
+# RUN apk add --no-cache \
+#     sqlite \
+#     ca-certificates \
+#     tzdata
+
 
 # 设置时区
 ENV TZ=Asia/Shanghai
 
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # 创建应用用户
-RUN addgroup -g 1000 whotakesshowers && \
-    adduser -D -u 1000 -G whotakesshowers whotakesshowers
+RUN addgroup --gid 1000 whotakesshowers && \
+    adduser --uid 1001 --gid 1000 whotakesshowers
 
 # 创建必要的目录
-RUN mkdir -p /app/uploads /app/data && \
-    chown -R whotakesshowers:whotakesshowers /app
+RUN mkdir -p /app/uploads /app/data
 
 WORKDIR /app
 
 # 从构建阶段复制文件
 COPY --from=backend-builder /backend/whotakesshowers /app/
 COPY --from=frontend-builder /frontend/dist /app/frontend/
+
+RUN chown -R whotakesshowers:whotakesshowers /app
 
 # 切换到应用用户
 USER whotakesshowers

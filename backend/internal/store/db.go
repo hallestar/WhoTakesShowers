@@ -26,6 +26,8 @@ func InitDB() (*gorm.DB, error) {
 
 	dbPath := filepath.Join(dataDir, "whotakesshowers.db")
 
+	log.Printf("InitDB: dbPath: %s", dbPath)
+
 	// 打开数据库连接
 	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
