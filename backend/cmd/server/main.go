@@ -33,6 +33,23 @@ func main() {
 	// 静态文件服务（用于上传的照片）
 	r.Static("/uploads", "./uploads")
 
+	// 前端静态文件服务
+	r.Static("/assets", "./frontend/assets")
+	r.StaticFile("/", "./frontend/index.html")
+	r.StaticFile("/favicon.ico", "./frontend/favicon.ico")
+
+	// SPA fallback: 所有其他路由返回index.html
+	r.NoRoute(func(c *gin.Context) {
+		path := c.Request.URL.Path
+		// 如果是API请求但找不到路由，返回404
+		if len(path) >= 4 && path[:4] == "/api" {
+			c.JSON(404, gin.H{"error": "Not Found"})
+			return
+		}
+		// 其他请求返回index.html（支持React Router）
+		c.File("./frontend/index.html")
+	})
+
 	log.Println("Server starting on :8080")
 	r.Run(":8080")
 }
