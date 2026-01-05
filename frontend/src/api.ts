@@ -1,6 +1,18 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/api';
+// 从环境变量读取 API 地址，支持开发环境动态配置
+const getApiBaseUrl = () => {
+  // 优先使用环境变量（由 Vite 提供）
+  const envApiUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envApiUrl) {
+    // 如果环境变量已包含 /api，直接使用
+    return envApiUrl.endsWith('/api') ? envApiUrl : `${envApiUrl}/api`;
+  }
+  // 默认地址
+  return 'http://localhost:8080/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -8,6 +20,11 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// 输出当前使用的 API 地址（开发时方便调试）
+if (import.meta.env.DEV) {
+  console.log('🔧 API Base URL:', API_BASE_URL);
+}
 
 // 类型定义
 export interface Candidate {

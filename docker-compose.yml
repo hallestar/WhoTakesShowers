@@ -14,6 +14,8 @@ services:
       # 持久化数据
       - ./data:/app/data
       - ./uploads:/app/uploads
+      # 日志文件
+      - ./log:/app/log
       # 开发模式：挂载源代码（可选）
       # - ./frontend/src:/app/frontend/src
       # - ./backend:/app/backend

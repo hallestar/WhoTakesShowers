@@ -35,11 +35,17 @@ function App() {
         {/* Navigation Bar */}
         <nav className="arcade-nav">
           <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '16px 24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '16px',
+              flexWrap: 'wrap'
+            }}>
               <Link
                 to="/"
                 style={{
-                  fontSize: '1.75rem',
+                  fontSize: 'clamp(1.25rem, 4vw, 1.75rem)',
                   fontWeight: '900',
                   fontFamily: "'Bungee Shade', cursive",
                   color: 'var(--neon-pink)',
@@ -47,21 +53,49 @@ function App() {
                   textShadow: '2px 2px 0 var(--electric-blue)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
+                  gap: '8px',
                 }}
               >
-                <span style={{ fontSize: '2.5rem' }}>🎮</span>
-                <span>家庭争端</span>
+                <span style={{ fontSize: 'clamp(1.75rem, 5vw, 2.5rem)' }}>🎮</span>
+                <span style={{ display: 'inline-block' }}>家庭争端</span>
               </Link>
 
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                <Link to="/history" className="arcade-btn arcade-btn-secondary">
+              <div style={{
+                display: 'flex',
+                gap: '8px',
+                flexWrap: 'wrap',
+                justifyContent: 'center'
+              }}>
+                <Link
+                  to="/history"
+                  className="arcade-btn arcade-btn-secondary"
+                  style={{
+                    fontSize: 'clamp(0.75rem, 2.5vw, 1rem)',
+                    padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 20px)'
+                  }}
+                >
                   📜 历史记录
                 </Link>
-                <Link to="/candidates" className="arcade-btn arcade-btn-accent">
+                <Link
+                  to="/candidates"
+                  className="arcade-btn arcade-btn-accent"
+                  style={{
+                    fontSize: 'clamp(0.75rem, 2.5vw, 1rem)',
+                    padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 20px)'
+                  }}
+                >
                   👥 {candidateTerm}
                 </Link>
-                <Link to="/settings" className="arcade-btn" style={{ background: 'var(--lime-green)', color: 'var(--deep-purple)' }}>
+                <Link
+                  to="/settings"
+                  className="arcade-btn"
+                  style={{
+                    background: 'var(--lime-green)',
+                    color: 'var(--deep-purple)',
+                    fontSize: 'clamp(0.75rem, 2.5vw, 1rem)',
+                    padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 20px)'
+                  }}
+                >
                   ⚙️ 设置
                 </Link>
               </div>

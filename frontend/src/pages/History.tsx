@@ -74,22 +74,23 @@ export default function HistoryPage() {
         to="/"
         className="arcade-btn"
         style={{
-          marginBottom: '32px',
+          marginBottom: 'clamp(16px, 4vw, 32px)',
           display: 'inline-flex',
           alignItems: 'center',
           gap: '8px',
           background: 'white',
           color: 'var(--deep-purple)',
-          fontSize: '1rem',
+          fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
+          padding: 'clamp(8px, 2vw, 12px) clamp(16px, 4vw, 24px)',
         }}
       >
         ⬅️ 返回首页
       </Link>
 
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: '48px', position: 'relative' }}>
-        <h1 style={{ marginBottom: '16px' }}>📜 历史记录</h1>
-        <p style={{ fontSize: '1.25rem', color: 'var(--deep-purple)', opacity: 0.8, fontFamily: "Fredoka One, cursive" }}>
+      <div style={{ textAlign: 'center', marginBottom: 'clamp(24px, 6vw, 48px)', position: 'relative' }}>
+        <h1 style={{ marginBottom: 'clamp(8px, 2vw, 16px)' }}>📜 历史记录</h1>
+        <p style={{ fontSize: 'clamp(1rem, 3vw, 1.25rem)', color: 'var(--deep-purple)', opacity: 0.8, fontFamily: "Fredoka One, cursive" }}>
           查看过去的随机选择结果
         </p>
       </div>
@@ -99,40 +100,40 @@ export default function HistoryPage() {
           className="arcade-card stagger-in"
           style={{
             textAlign: 'center',
-            padding: '64px 32px',
+            padding: 'clamp(32px, 8vw, 64px) clamp(16px, 4vw, 32px)',
             background: 'linear-gradient(135deg, #FFE8D4 0%, #E8E4FF 100%)',
           }}
         >
-          <div style={{ fontSize: '80px', marginBottom: '20px', animation: 'bounce 2s ease-in-out infinite' }}>📋</div>
-          <h3 style={{ fontSize: '2rem', marginBottom: '12px' }}>还没有历史记录</h3>
-          <p style={{ fontSize: '1.125rem', opacity: 0.8 }}>开始第一次随机选择吧！</p>
+          <div style={{ fontSize: 'clamp(48px, 12vw, 80px)', marginBottom: 'clamp(12px, 3vw, 20px)', animation: 'bounce 2s ease-in-out infinite' }}>📋</div>
+          <h3 style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', marginBottom: 'clamp(8px, 2vw, 12px)' }}>还没有历史记录</h3>
+          <p style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)', opacity: 0.8 }}>开始第一次随机选择吧！</p>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(12px, 3vw, 20px)' }}>
           {histories.map((history, index) => (
             <div
               key={history.id}
               className="arcade-card"
               style={{
-                padding: '28px 32px',
+                padding: 'clamp(16px, 4vw, 28px) clamp(16px, 4vw, 32px)',
                 animation: `slideInUp 0.5s ease-out forwards ${index * 0.08}s`,
                 background: index % 3 === 0 ? 'var(--soft-lilac)' : index % 3 === 1 ? 'var(--minty-fresh)' : 'var(--peachy)',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'clamp(12px, 3vw, 24px)', flexWrap: 'wrap' }}>
                 {/* Left Section - Icons and Info */}
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '24px' }}>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 'clamp(12px, 3vw, 24px)', minWidth: '200px' }}>
                   {/* Trophy Icon */}
                   <div
                     style={{
-                      width: '80px',
-                      height: '80px',
+                      width: 'clamp(48px, 12vw, 80px)',
+                      height: 'clamp(48px, 12vw, 80px)',
                       borderRadius: '50%',
                       background: 'linear-gradient(135deg, var(--electric-blue) 0%, var(--neon-pink) 100%)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '40px',
+                      fontSize: 'clamp(24px, 6vw, 40px)',
                       border: '4px solid var(--deep-purple)',
                       boxShadow: '3px 3px 0 var(--deep-purple)',
                       flexShrink: 0,
@@ -142,16 +143,16 @@ export default function HistoryPage() {
                   </div>
 
                   {/* Info Section */}
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                      <span style={{ fontSize: '1.5rem' }}>🎯</span>
-                      <h3 style={{ fontSize: '1.5rem', margin: 0 }}>{history.project_name}</h3>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(8px, 2vw, 12px)', marginBottom: 'clamp(4px, 1vw, 8px)' }}>
+                      <span style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)' }}>🎯</span>
+                      <h3 style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)', margin: 0 }}>{history.project_name}</h3>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontSize: '1.25rem' }}>🎉</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(8px, 2vw, 12px)', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)' }}>🎉</span>
                       <p
                         style={{
-                          fontSize: '1.25rem',
+                          fontSize: 'clamp(1rem, 2.5vw, 1.25rem)',
                           fontFamily: "Fredoka One, cursive",
                           color: 'var(--neon-pink)',
                           fontWeight: 'bold',
@@ -160,7 +161,7 @@ export default function HistoryPage() {
                       >
                         {history.candidate_name}
                       </p>
-                      <span className="arcade-tag arcade-tag-green" style={{ marginLeft: 'auto' }}>
+                      <span className="arcade-tag arcade-tag-green">
                         获胜者
                       </span>
                     </div>
@@ -171,17 +172,17 @@ export default function HistoryPage() {
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
                   <div
                     style={{
-                      padding: '12px 20px',
+                      padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 20px)',
                       background: 'white',
                       border: '3px solid var(--deep-purple)',
                       borderRadius: '16px',
                       boxShadow: '3px 3px 0 var(--deep-purple)',
                     }}
                   >
-                    <div style={{ fontSize: '0.75rem', opacity: 0.7, marginBottom: '4px', fontFamily: "Fredoka One, cursive" }}>
+                    <div style={{ fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)', opacity: 0.7, marginBottom: 'clamp(2px, 0.5vw, 4px)', fontFamily: "Fredoka One, cursive" }}>
                       🕐 时间
                     </div>
-                    <div style={{ fontSize: '1rem', fontWeight: '700' }}>{formatDate(history.selected_at)}</div>
+                    <div style={{ fontSize: 'clamp(0.75rem, 2vw, 1rem)', fontWeight: '700' }}>{formatDate(history.selected_at)}</div>
                   </div>
                 </div>
               </div>

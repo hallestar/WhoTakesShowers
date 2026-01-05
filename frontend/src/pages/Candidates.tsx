@@ -210,22 +210,23 @@ export default function Candidates() {
         to="/"
         className="arcade-btn"
         style={{
-          marginBottom: '32px',
+          marginBottom: 'clamp(16px, 4vw, 32px)',
           display: 'inline-flex',
           alignItems: 'center',
           gap: '8px',
           background: 'white',
           color: 'var(--deep-purple)',
-          fontSize: '1rem',
+          fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
+          padding: 'clamp(8px, 2vw, 12px) clamp(16px, 4vw, 24px)',
         }}
       >
         ⬅️ 返回首页
       </Link>
 
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: '48px', position: 'relative' }}>
-        <h1 style={{ marginBottom: '16px' }}>👥 {candidateTerm}管理</h1>
-        <p style={{ fontSize: '1.25rem', color: 'var(--deep-purple)', opacity: 0.8, fontFamily: '"Fredoka One", cursive' }}>
+      <div style={{ textAlign: 'center', marginBottom: 'clamp(24px, 6vw, 48px)', position: 'relative' }}>
+        <h1 style={{ marginBottom: 'clamp(8px, 2vw, 16px)' }}>👥 {candidateTerm}管理</h1>
+        <p style={{ fontSize: 'clamp(1rem, 3vw, 1.25rem)', color: 'var(--deep-purple)', opacity: 0.8, fontFamily: '"Fredoka One", cursive' }}>
           添加和管理随机选择的参与者
         </p>
       </div>
@@ -235,25 +236,30 @@ export default function Candidates() {
           className="arcade-card"
           style={{
             textAlign: 'center',
-            padding: '64px 32px',
-            marginBottom: '32px',
+            padding: 'clamp(32px, 8vw, 64px) clamp(16px, 4vw, 32px)',
+            marginBottom: 'clamp(16px, 4vw, 32px)',
             background: 'linear-gradient(135deg, #FFE8D4 0%, #E8E4FF 100%)',
           }}
         >
-          <div style={{ fontSize: '80px', marginBottom: '20px', animation: 'bounce 2s ease-in-out infinite' }}>👤</div>
-          <h3 style={{ fontSize: '2rem', marginBottom: '12px' }}>还没有{candidateTerm}</h3>
-          <p style={{ fontSize: '1.125rem', opacity: 0.8 }}>点击下方按钮添加第一个{candidateTerm}</p>
+          <div style={{ fontSize: 'clamp(48px, 12vw, 80px)', marginBottom: 'clamp(12px, 3vw, 20px)', animation: 'bounce 2s ease-in-out infinite' }}>👤</div>
+          <h3 style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', marginBottom: 'clamp(8px, 2vw, 12px)' }}>还没有{candidateTerm}</h3>
+          <p style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)', opacity: 0.8 }}>点击下方按钮添加第一个{candidateTerm}</p>
         </div>
       )}
 
       {/* Candidates Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '32px', marginBottom: '32px' }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(280px, 85vw, 320px), 1fr))',
+        gap: 'clamp(16px, 4vw, 32px)',
+        marginBottom: 'clamp(16px, 4vw, 32px)'
+      }}>
         {candidates.map((candidate, index) => (
           <div
             key={candidate.id}
             className="arcade-card"
             style={{
-              padding: '32px',
+              padding: 'clamp(16px, 4vw, 32px)',
               animation: `slideInUp 0.5s ease-out forwards ${index * 0.1}s`,
               background: index % 3 === 0 ? 'var(--soft-lilac)' : index % 3 === 1 ? 'var(--minty-fresh)' : 'var(--peachy)',
             }}
@@ -265,15 +271,15 @@ export default function Candidates() {
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   className="arcade-input"
-                  style={{ marginBottom: '20px' }}
+                  style={{ marginBottom: 'clamp(12px, 3vw, 20px)' }}
                   placeholder={`${candidateTerm}姓名`}
                   autoFocus
                 />
-                <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ display: 'flex', gap: 'clamp(8px, 2vw, 12px)' }}>
                   <button
                     onClick={() => handleUpdate(candidate.id)}
                     className="arcade-btn arcade-btn-primary"
-                    style={{ flex: 1, fontSize: '1rem' }}
+                    style={{ flex: 1, fontSize: 'clamp(0.875rem, 2.5vw, 1rem)' }}
                   >
                     保存
                   </button>
@@ -285,7 +291,7 @@ export default function Candidates() {
                     className="arcade-btn"
                     style={{
                       flex: 1,
-                      fontSize: '1rem',
+                      fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
                       background: 'white',
                       color: 'var(--deep-purple)',
                     }}
@@ -296,7 +302,7 @@ export default function Candidates() {
               </div>
             ) : (
               <>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'clamp(12px, 3vw, 24px)' }}>
                   {/* Avatar */}
                   <div style={{ position: 'relative' }}>
                     <Avatar photoUrl={candidate.photo_url} size={100} />
@@ -307,8 +313,8 @@ export default function Candidates() {
                         position: 'absolute',
                         bottom: '-4px',
                         right: '-4px',
-                        width: '32px',
-                        height: '32px',
+                        width: 'clamp(24px, 6vw, 32px)',
+                        height: 'clamp(24px, 6vw, 32px)',
                         background: 'var(--neon-pink)',
                         border: '2px solid var(--deep-purple)',
                         borderRadius: '50%',
@@ -316,7 +322,7 @@ export default function Candidates() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: 'pointer',
-                        fontSize: '16px',
+                        fontSize: 'clamp(12px, 3vw, 16px)',
                         boxShadow: '2px 2px 0 var(--deep-purple)',
                       }}
                       title="上传照片"
@@ -334,14 +340,14 @@ export default function Candidates() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(4px, 1vw, 8px)' }}>
                     <button
                       onClick={() => {
                         setEditingId(candidate.id);
                         setEditName(candidate.name);
                       }}
                       style={{
-                        padding: '10px 14px',
+                        padding: 'clamp(6px, 1.5vw, 10px) clamp(10px, 2.5vw, 14px)',
                         backgroundColor: 'var(--electric-blue)',
                         color: 'white',
                         border: '2px solid var(--deep-purple)',
@@ -349,7 +355,7 @@ export default function Candidates() {
                         boxShadow: '2px 2px 0 var(--deep-purple)',
                         cursor: 'pointer',
                         fontFamily: '"Fredoka One", cursive',
-                        fontSize: '0.875rem',
+                        fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
                         transition: 'all 0.2s',
                       }}
                       onMouseEnter={(e) => {
@@ -364,7 +370,7 @@ export default function Candidates() {
                     <button
                       onClick={() => handleDelete(candidate.id)}
                       style={{
-                        padding: '10px 14px',
+                        padding: 'clamp(6px, 1.5vw, 10px) clamp(10px, 2.5vw, 14px)',
                         backgroundColor: 'var(--neon-pink)',
                         color: 'white',
                         border: '2px solid var(--deep-purple)',
@@ -372,7 +378,7 @@ export default function Candidates() {
                         boxShadow: '2px 2px 0 var(--deep-purple)',
                         cursor: 'pointer',
                         fontFamily: '"Fredoka One", cursive',
-                        fontSize: '0.875rem',
+                        fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
                         transition: 'all 0.2s',
                       }}
                       onMouseEnter={(e) => {
@@ -386,7 +392,7 @@ export default function Candidates() {
                     </button>
                   </div>
                 </div>
-                <h3 style={{ fontSize: '1.75rem', marginBottom: '8px', textAlign: 'center' }}>{candidate.name}</h3>
+                <h3 style={{ fontSize: 'clamp(1.25rem, 4vw, 1.75rem)', marginBottom: 'clamp(4px, 1vw, 8px)', textAlign: 'center' }}>{candidate.name}</h3>
                 <div style={{ textAlign: 'center' }}>
                   <span className="arcade-tag arcade-tag-blue">
                     {candidateTerm} #{index + 1}
@@ -394,16 +400,16 @@ export default function Candidates() {
                 </div>
 
                 {/* Photo Gallery Button - Always Visible */}
-                <div style={{ marginTop: '16px' }}>
+                <div style={{ marginTop: 'clamp(8px, 2vw, 16px)' }}>
                   <label
                     htmlFor={`gallery-upload-${candidate.id}`}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: '8px',
+                      gap: 'clamp(4px, 1vw, 8px)',
                       width: '100%',
-                      padding: '12px 16px',
+                      padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 16px)',
                       background: candidatePhotos[candidate.id] && candidatePhotos[candidate.id].length > 0
                         ? 'linear-gradient(135deg, var(--electric-blue) 0%, var(--minty-fresh) 100%)'
                         : 'linear-gradient(135deg, var(--neon-pink) 0%, var(--sunset-orange) 100%)',
@@ -413,7 +419,7 @@ export default function Candidates() {
                       boxShadow: '3px 3px 0 var(--deep-purple)',
                       cursor: 'pointer',
                       fontFamily: '"Fredoka One", cursive',
-                      fontSize: '1rem',
+                      fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
                       transition: 'all 0.2s',
                     }}
                     onMouseEnter={(e) => {
@@ -425,7 +431,7 @@ export default function Candidates() {
                       e.currentTarget.style.boxShadow = '3px 3px 0 var(--deep-purple)';
                     }}
                   >
-                    <span style={{ fontSize: '1.25rem' }}>📸</span>
+                    <span style={{ fontSize: 'clamp(1rem, 3vw, 1.25rem)' }}>📸</span>
                     <span>
                       {candidatePhotos[candidate.id] && candidatePhotos[candidate.id].length > 0
                         ? `查看相册 (${candidatePhotos[candidate.id].length})`
@@ -444,13 +450,13 @@ export default function Candidates() {
 
                 {/* Photo Gallery */}
                 {candidatePhotos[candidate.id] && candidatePhotos[candidate.id].length > 0 && (
-                  <div style={{ marginTop: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                      <span style={{ fontSize: '0.875rem', fontFamily: '"Fredoka One", cursive', color: 'var(--deep-purple)' }}>
+                  <div style={{ marginTop: 'clamp(8px, 2vw, 16px)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'clamp(4px, 1vw, 8px)' }}>
+                      <span style={{ fontSize: 'clamp(0.75rem, 2vw, 0.875rem)', fontFamily: '"Fredoka One", cursive', color: 'var(--deep-purple)' }}>
                         📸 相册 ({candidatePhotos[candidate.id].length})
                       </span>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'clamp(4px, 1vw, 8px)' }}>
                       {candidatePhotos[candidate.id].slice(0, 6).map((photo, photoIndex) => (
                         <div
                           key={photo.id}
@@ -634,7 +640,7 @@ export default function Candidates() {
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 1000,
-            padding: '20px',
+            padding: 'clamp(8px, 2vw, 20px)',
           }}
         >
           <div
@@ -644,7 +650,8 @@ export default function Candidates() {
               width: '100%',
               maxHeight: '90vh',
               display: 'flex',
-              gap: '24px',
+              flexDirection: 'column',
+              gap: 'clamp(12px, 3vw, 24px)',
             }}
           >
             {/* Photo Display */}
@@ -655,6 +662,7 @@ export default function Candidates() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 position: 'relative',
+                width: '100%',
               }}
             >
               <div
@@ -714,19 +722,23 @@ export default function Candidates() {
             {/* Side Panel */}
             <div
               style={{
-                width: '200px',
+                width: '100%',
+                maxWidth: '200px',
                 display: 'flex',
-                flexDirection: 'column',
-                gap: '16px',
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: 'clamp(8px, 2vw, 16px)',
+                justifyContent: 'center',
+                alignSelf: 'center',
               }}
             >
               {/* Navigation Buttons */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: 'clamp(4px, 1vw, 8px)', width: '100%', justifyContent: 'center' }}>
                 <button
                   onClick={() => setCurrentPhotoIndex((prev) => (prev > 0 ? prev - 1 : modalPhotos.length - 1))}
                   disabled={modalPhotos.length <= 1 || selectionMode}
                   style={{
-                    padding: '12px',
+                    padding: 'clamp(8px, 2vw, 12px)',
                     background: 'var(--electric-blue)',
                     color: 'white',
                     border: '2px solid var(--deep-purple)',
@@ -734,8 +746,10 @@ export default function Candidates() {
                     boxShadow: '3px 3px 0 var(--deep-purple)',
                     cursor: modalPhotos.length <= 1 || selectionMode ? 'not-allowed' : 'pointer',
                     fontFamily: '"Fredoka One", cursive',
-                    fontSize: '1rem',
+                    fontSize: 'clamp(0.75rem, 2vw, 1rem)',
                     opacity: modalPhotos.length <= 1 || selectionMode ? 0.5 : 1,
+                    flex: 1,
+                    minWidth: 'clamp(80px, 25vw, 120px)',
                   }}
                 >
                   ⬅️ 上一张
@@ -744,7 +758,7 @@ export default function Candidates() {
                   onClick={() => setCurrentPhotoIndex((prev) => (prev < modalPhotos.length - 1 ? prev + 1 : 0))}
                   disabled={modalPhotos.length <= 1 || selectionMode}
                   style={{
-                    padding: '12px',
+                    padding: 'clamp(8px, 2vw, 12px)',
                     background: 'var(--electric-blue)',
                     color: 'white',
                     border: '2px solid var(--deep-purple)',
@@ -752,85 +766,26 @@ export default function Candidates() {
                     boxShadow: '3px 3px 0 var(--deep-purple)',
                     cursor: modalPhotos.length <= 1 || selectionMode ? 'not-allowed' : 'pointer',
                     fontFamily: '"Fredoka One", cursive',
-                    fontSize: '1rem',
+                    fontSize: 'clamp(0.75rem, 2vw, 1rem)',
                     opacity: modalPhotos.length <= 1 || selectionMode ? 0.5 : 1,
+                    flex: 1,
+                    minWidth: 'clamp(80px, 25vw, 120px)',
                   }}
                 >
                   ➡️ 下一张
                 </button>
               </div>
 
-              {/* Selection Mode Toggle */}
-              <button
-                onClick={() => {
-                  setSelectionMode(!selectionMode);
-                  setSelectedPhotoIds(new Set());
-                }}
-                style={{
-                  padding: '12px',
-                  background: selectionMode ? 'var(--sunset-orange)' : 'var(--lime-green)',
-                  color: 'white',
-                  border: '2px solid var(--deep-purple)',
-                  borderRadius: '12px',
-                  boxShadow: '3px 3px 0 var(--deep-purple)',
-                  cursor: 'pointer',
-                  fontFamily: '"Fredoka One", cursive',
-                  fontSize: '1rem',
-                }}
-              >
-                {selectionMode ? '✖️ 取消选择' : '☑️ 批量删除'}
-              </button>
-
-              {/* Selection Info & Delete Button */}
-              {selectionMode && (
-                <>
-                  {selectedPhotoIds.size > 0 && (
-                    <div
-                      style={{
-                        textAlign: 'center',
-                        padding: '12px',
-                        background: 'var(--neon-pink)',
-                        borderRadius: '12px',
-                        border: '2px solid var(--deep-purple)',
-                        fontFamily: '"Fredoka One", cursive',
-                        fontSize: '1rem',
-                        color: 'white',
-                      }}
-                    >
-                      已选 {selectedPhotoIds.size} 张
-                    </div>
-                  )}
-                  <button
-                    onClick={handleBatchDelete}
-                    disabled={selectedPhotoIds.size === 0}
-                    style={{
-                      padding: '16px',
-                      background: selectedPhotoIds.size > 0 ? 'var(--sunset-orange)' : 'white',
-                      color: selectedPhotoIds.size > 0 ? 'white' : 'var(--deep-purple)',
-                      border: '2px solid var(--deep-purple)',
-                      borderRadius: '12px',
-                      boxShadow: '3px 3px 0 var(--deep-purple)',
-                      cursor: selectedPhotoIds.size > 0 ? 'pointer' : 'not-allowed',
-                      fontFamily: '"Fredoka One", cursive',
-                      fontSize: '1rem',
-                      opacity: selectedPhotoIds.size > 0 ? 1 : 0.5,
-                    }}
-                  >
-                    🗑️ 删除选中
-                  </button>
-                </>
-              )}
-
               {/* Photo Counter */}
               <div
                 style={{
                   textAlign: 'center',
-                  padding: '12px',
+                  padding: 'clamp(8px, 2vw, 12px)',
                   background: 'white',
                   borderRadius: '12px',
                   border: '2px solid var(--deep-purple)',
                   fontFamily: '"Fredoka One", cursive',
-                  fontSize: '1rem',
+                  fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
                   color: 'var(--deep-purple)',
                 }}
               >
@@ -855,7 +810,7 @@ export default function Candidates() {
                     }
                   }}
                   style={{
-                    padding: '16px',
+                    padding: 'clamp(10px, 2.5vw, 16px)',
                     background: 'var(--neon-pink)',
                     color: 'white',
                     border: '2px solid var(--deep-purple)',
@@ -863,7 +818,7 @@ export default function Candidates() {
                     boxShadow: '3px 3px 0 var(--deep-purple)',
                     cursor: 'pointer',
                     fontFamily: '"Fredoka One", cursive',
-                    fontSize: '1rem',
+                    fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
                     transition: 'all 0.2s',
                   }}
                   onMouseEnter={(e) => {
@@ -880,7 +835,7 @@ export default function Candidates() {
               {!selectionMode && modalPhotos[currentPhotoIndex]?.is_avatar && (
                 <div
                   style={{
-                    padding: '16px',
+                    padding: 'clamp(10px, 2.5vw, 16px)',
                     background: 'var(--minty-fresh)',
                     color: 'white',
                     border: '2px solid var(--deep-purple)',
@@ -888,18 +843,79 @@ export default function Candidates() {
                     boxShadow: '3px 3px 0 var(--deep-purple)',
                     textAlign: 'center',
                     fontFamily: '"Fredoka One", cursive',
-                    fontSize: '1rem',
+                    fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
                   }}
                 >
                   ✅ 当前头像
                 </div>
               )}
 
+              {/* Selection Mode Toggle */}
+              <button
+                onClick={() => {
+                  setSelectionMode(!selectionMode);
+                  setSelectedPhotoIds(new Set());
+                }}
+                style={{
+                  padding: 'clamp(8px, 2vw, 12px)',
+                  background: selectionMode ? 'var(--sunset-orange)' : 'var(--lime-green)',
+                  color: 'white',
+                  border: '2px solid var(--deep-purple)',
+                  borderRadius: '12px',
+                  boxShadow: '3px 3px 0 var(--deep-purple)',
+                  cursor: 'pointer',
+                  fontFamily: '"Fredoka One", cursive',
+                  fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
+                }}
+              >
+                {selectionMode ? '✖️ 取消选择' : '☑️ 批量删除'}
+              </button>
+
+              {/* Selection Info & Delete Button */}
+              {selectionMode && (
+                <>
+                  {selectedPhotoIds.size > 0 && (
+                    <div
+                      style={{
+                        textAlign: 'center',
+                        padding: 'clamp(8px, 2vw, 12px)',
+                        background: 'var(--neon-pink)',
+                        borderRadius: '12px',
+                        border: '2px solid var(--deep-purple)',
+                        fontFamily: '"Fredoka One", cursive',
+                        fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
+                        color: 'white',
+                      }}
+                    >
+                      已选 {selectedPhotoIds.size} 张
+                    </div>
+                  )}
+                  <button
+                    onClick={handleBatchDelete}
+                    disabled={selectedPhotoIds.size === 0}
+                    style={{
+                      padding: 'clamp(12px, 3vw, 16px)',
+                      background: selectedPhotoIds.size > 0 ? 'var(--sunset-orange)' : 'white',
+                      color: selectedPhotoIds.size > 0 ? 'white' : 'var(--deep-purple)',
+                      border: '2px solid var(--deep-purple)',
+                      borderRadius: '12px',
+                      boxShadow: '3px 3px 0 var(--deep-purple)',
+                      cursor: selectedPhotoIds.size > 0 ? 'pointer' : 'not-allowed',
+                      fontFamily: '"Fredoka One", cursive',
+                      fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
+                      opacity: selectedPhotoIds.size > 0 ? 1 : 0.5,
+                    }}
+                  >
+                    🗑️ 删除选中
+                  </button>
+                </>
+              )}
+
               {/* Close Button */}
               <button
                 onClick={() => setShowPhotoModal(false)}
                 style={{
-                  padding: '12px',
+                  padding: 'clamp(8px, 2vw, 12px)',
                   background: 'var(--sunset-orange)',
                   color: 'white',
                   border: '2px solid var(--deep-purple)',
@@ -907,8 +923,7 @@ export default function Candidates() {
                   boxShadow: '3px 3px 0 var(--deep-purple)',
                   cursor: 'pointer',
                   fontFamily: '"Fredoka One", cursive',
-                  fontSize: '1rem',
-                  marginTop: 'auto',
+                  fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
                 }}
               >
                 ✖️ 关闭

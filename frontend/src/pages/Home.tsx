@@ -152,25 +152,32 @@ export default function Home() {
   return (
     <div>
       {/* Header Section */}
-      <div style={{ textAlign: 'center', marginBottom: '48px', position: 'relative' }}>
-        <h1 style={{ marginBottom: '16px' }}>🎯 随机挑战</h1>
-        <p style={{ fontSize: '1.25rem', color: 'var(--deep-purple)', opacity: 0.8, fontFamily: "Fredoka One, cursive" }}>
+      <div style={{ textAlign: 'center', marginBottom: 'clamp(24px, 5vw, 48px)', position: 'relative' }}>
+        <h1 style={{ marginBottom: 'clamp(8px, 2vw, 16px)' }}>🎯 随机挑战</h1>
+        <p style={{ fontSize: 'clamp(1rem, 3vw, 1.25rem)', color: 'var(--deep-purple)', opacity: 0.8, fontFamily: "Fredoka One, cursive" }}>
           选择一个项目开始公平竞争！
         </p>
       </div>
 
       {/* Batch Delete Button */}
       {projects.length > 0 && (
-        <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{
+          marginBottom: 'clamp(16px, 4vw, 24px)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'clamp(8px, 2vw, 16px)',
+          flexWrap: 'wrap',
+          justifyContent: 'center'
+        }}>
           <div style={{
-            padding: '12px 20px',
+            padding: 'clamp(8px, 2vw, 12px) clamp(12px, 3vw, 20px)',
             background: 'var(--neon-pink)',
             color: 'white',
             border: '3px solid var(--deep-purple)',
             borderRadius: '16px',
             boxShadow: '3px 3px 0 var(--deep-purple)',
             fontFamily: "Fredoka One, cursive",
-            fontSize: '1rem',
+            fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
           }}>
             已选择: {selectedProjectIds.size} 个项目
           </div>
@@ -179,8 +186,8 @@ export default function Home() {
             disabled={selectedProjectIds.size === 0}
             className="arcade-btn arcade-btn-primary"
             style={{
-              padding: '12px 24px',
-              fontSize: '1rem',
+              padding: 'clamp(8px, 2vw, 12px) clamp(16px, 4vw, 24px)',
+              fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
               opacity: selectedProjectIds.size === 0 ? 0.5 : 1,
               cursor: selectedProjectIds.size === 0 ? 'not-allowed' : 'pointer',
             }}
@@ -195,19 +202,24 @@ export default function Home() {
           className="arcade-card stagger-in"
           style={{
             textAlign: 'center',
-            padding: '64px 32px',
-            marginBottom: '32px',
+            padding: 'clamp(32px, 8vw, 64px) clamp(16px, 4vw, 32px)',
+            marginBottom: 'clamp(16px, 4vw, 32px)',
             background: 'linear-gradient(135deg, #FFE8D4 0%, #E8E4FF 100%)',
           }}
         >
-          <div style={{ fontSize: '80px', marginBottom: '20px', animation: 'bounce 2s ease-in-out infinite' }}>🎯</div>
-          <h3 style={{ fontSize: '2rem', marginBottom: '12px' }}>还没有项目呢！</h3>
-          <p style={{ fontSize: '1.125rem', opacity: 0.8 }}>点击下方按钮创建第一个随机项目吧</p>
+          <div style={{ fontSize: 'clamp(48px, 12vw, 80px)', marginBottom: 'clamp(12px, 3vw, 20px)', animation: 'bounce 2s ease-in-out infinite' }}>🎯</div>
+          <h3 style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', marginBottom: 'clamp(8px, 2vw, 12px)' }}>还没有项目呢！</h3>
+          <p style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)', opacity: 0.8 }}>点击下方按钮创建第一个随机项目吧</p>
         </div>
       )}
 
       {/* Projects Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '32px', marginBottom: '32px' }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(280px, 80vw, 320px), 1fr))',
+        gap: 'clamp(16px, 4vw, 32px)',
+        marginBottom: 'clamp(16px, 4vw, 32px)'
+      }}>
         {projects.map((project, index) => {
           const candidateIds = JSON.parse(project.candidate_ids || '[]');
           const projectCandidates = candidates.filter((c) => candidateIds.includes(c.id));
@@ -217,7 +229,7 @@ export default function Home() {
               onClick={() => navigate(`/project/${project.id}`)}
               className="arcade-card"
               style={{
-                padding: '32px',
+                padding: 'clamp(16px, 4vw, 32px)',
                 cursor: 'pointer',
                 animation: `slideInUp 0.5s ease-out forwards ${index * 0.1}s`,
                 background: index % 3 === 0 ? 'var(--soft-lilac)' : index % 3 === 1 ? 'var(--minty-fresh)' : 'var(--peachy)',
@@ -232,10 +244,10 @@ export default function Home() {
                 }}
                 style={{
                   position: 'absolute',
-                  top: '12px',
-                  left: '12px',
-                  width: '32px',
-                  height: '32px',
+                  top: 'clamp(8px, 2vw, 12px)',
+                  left: 'clamp(8px, 2vw, 12px)',
+                  width: 'clamp(24px, 6vw, 32px)',
+                  height: 'clamp(24px, 6vw, 32px)',
                   background: selectedProjectIds.has(project.id) ? 'var(--lime-green)' : 'white',
                   border: '3px solid var(--deep-purple)',
                   borderRadius: '8px',
@@ -244,7 +256,7 @@ export default function Home() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '20px',
+                  fontSize: 'clamp(14px, 4vw, 20px)',
                   transition: 'all 0.2s',
                   zIndex: 10,
                 }}
@@ -258,27 +270,27 @@ export default function Home() {
                 {selectedProjectIds.has(project.id) ? '✓' : ''}
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '20px' }}>
-                <div style={{ fontSize: '48px' }}>🎲</div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'clamp(12px, 3vw, 20px)' }}>
+                <div style={{ fontSize: 'clamp(32px, 10vw, 48px)' }}>🎲</div>
                 <div style={{
-                  padding: '8px 16px',
+                  padding: 'clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 16px)',
                   background: 'white',
                   border: '3px solid var(--deep-purple)',
                   borderRadius: '999px',
                   fontFamily: "Fredoka One, cursive",
-                  fontSize: '0.875rem',
+                  fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
                   boxShadow: '2px 2px 0 var(--deep-purple)',
                 }}>
                   {projectCandidates.length} 人
                 </div>
               </div>
 
-              <h3 style={{ fontSize: '1.75rem', marginBottom: '12px', lineHeight: '1.3' }}>{project.name}</h3>
-              <p style={{ fontSize: '1rem', opacity: 0.8, marginBottom: '20px', fontFamily: "'Nunito', sans-serif", fontWeight: '600' }}>
+              <h3 style={{ fontSize: 'clamp(1.25rem, 4vw, 1.75rem)', marginBottom: 'clamp(8px, 2vw, 12px)', lineHeight: '1.3' }}>{project.name}</h3>
+              <p style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1rem)', opacity: 0.8, marginBottom: 'clamp(12px, 3vw, 20px)', fontFamily: "'Nunito', sans-serif", fontWeight: '600' }}>
                 点击开始随机选择
               </p>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(4px, 1vw, 8px)' }}>
                 {projectCandidates.slice(0, 3).map((c) => (
                   <span key={c.id} className="arcade-tag arcade-tag-blue">
                     {c.name}
@@ -307,8 +319,8 @@ export default function Home() {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              minHeight: '280px',
-              padding: '32px',
+              minHeight: 'clamp(200px, 50vw, 280px)',
+              padding: 'clamp(16px, 4vw, 32px)',
               animation: `slideInUp 0.5s ease-out forwards ${projects.length * 0.1}s`,
             }}
             onMouseEnter={(e) => {
@@ -318,8 +330,8 @@ export default function Home() {
               e.currentTarget.style.transform = '';
             }}
           >
-            <div style={{ fontSize: '64px', marginBottom: '16px', animation: 'bounce 2s ease-in-out infinite' }}>➕</div>
-            <span style={{ fontSize: '1.5rem', fontFamily: "Fredoka One, cursive", color: 'var(--neon-pink)' }}>
+            <div style={{ fontSize: 'clamp(40px, 12vw, 64px)', marginBottom: 'clamp(8px, 2vw, 16px)', animation: 'bounce 2s ease-in-out infinite' }}>➕</div>
+            <span style={{ fontSize: 'clamp(1.125rem, 3vw, 1.5rem)', fontFamily: "Fredoka One, cursive", color: 'var(--neon-pink)' }}>
               添加新项目
             </span>
           </button>
@@ -327,13 +339,13 @@ export default function Home() {
           <div
             className="arcade-card"
             style={{
-              padding: '32px',
+              padding: 'clamp(16px, 4vw, 32px)',
               background: 'var(--lime-green)',
               animation: `slideInUp 0.5s ease-out forwards ${projects.length * 0.1}s`,
             }}
           >
             <form onSubmit={handleCreateProject}>
-              <h3 style={{ marginBottom: '24px', textAlign: 'center' }}>✨ 创建新项目</h3>
+              <h3 style={{ marginBottom: 'clamp(12px, 3vw, 24px)', textAlign: 'center' }}>✨ 创建新项目</h3>
 
               <input
                 type="text"
@@ -341,17 +353,17 @@ export default function Home() {
                 onChange={(e) => setNewProjectName(e.target.value)}
                 placeholder="项目名称（如：谁先洗澡）"
                 className="arcade-input"
-                style={{ marginBottom: '20px' }}
+                style={{ marginBottom: 'clamp(12px, 3vw, 20px)' }}
                 autoFocus
               />
 
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', marginBottom: '12px', fontFamily: "Fredoka One, cursive", fontSize: '1.125rem' }}>
+              <div style={{ marginBottom: 'clamp(12px, 3vw, 20px)' }}>
+                <label style={{ display: 'block', marginBottom: 'clamp(8px, 2vw, 12px)', fontFamily: "Fredoka One, cursive", fontSize: 'clamp(1rem, 2.5vw, 1.125rem)' }}>
                   选择{candidateTerm}
                 </label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(4px, 1vw, 8px)' }}>
                   {candidates.length === 0 ? (
-                    <p style={{ padding: '16px', background: 'white', borderRadius: '12px', fontSize: '0.875rem', opacity: 0.8 }}>
+                    <p style={{ padding: 'clamp(8px, 2vw, 16px)', background: 'white', borderRadius: '12px', fontSize: 'clamp(0.75rem, 2vw, 0.875rem)', opacity: 0.8 }}>
                       还没有{candidateTerm}，请先去{candidateTerm}管理页面添加
                     </p>
                   ) : (
@@ -361,13 +373,13 @@ export default function Home() {
                         type="button"
                         onClick={() => toggleCandidate(candidate.id)}
                         style={{
-                          padding: '10px 18px',
+                          padding: 'clamp(8px, 2vw, 10px) clamp(12px, 3vw, 18px)',
                           borderRadius: '999px',
                           border: '3px solid var(--deep-purple)',
                           backgroundColor: selectedCandidateIds.includes(candidate.id) ? 'var(--deep-purple)' : 'white',
                           color: selectedCandidateIds.includes(candidate.id) ? 'white' : 'var(--deep-purple)',
                           fontFamily: "Fredoka One, cursive",
-                          fontSize: '1rem',
+                          fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
                           cursor: 'pointer',
                           transition: 'all 0.2s',
                           boxShadow: '2px 2px 0 var(--deep-purple)',
@@ -386,11 +398,11 @@ export default function Home() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ display: 'flex', gap: 'clamp(8px, 2vw, 12px)' }}>
                 <button
                   type="submit"
                   className="arcade-btn arcade-btn-primary"
-                  style={{ flex: 1, fontSize: '1rem' }}
+                  style={{ flex: 1, fontSize: 'clamp(0.875rem, 2.5vw, 1rem)' }}
                 >
                   创建
                 </button>
@@ -404,7 +416,7 @@ export default function Home() {
                   className="arcade-btn"
                   style={{
                     flex: 1,
-                    fontSize: '1rem',
+                    fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
                     background: 'white',
                     color: 'var(--deep-purple)',
                   }}

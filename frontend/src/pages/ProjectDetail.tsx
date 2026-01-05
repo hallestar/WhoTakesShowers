@@ -149,22 +149,23 @@ export default function ProjectDetail() {
         to="/"
         className="arcade-btn"
         style={{
-          marginBottom: '32px',
+          marginBottom: 'clamp(16px, 4vw, 32px)',
           display: 'inline-flex',
           alignItems: 'center',
           gap: '8px',
           background: 'white',
           color: 'var(--deep-purple)',
-          fontSize: '1rem',
+          fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
+          padding: 'clamp(8px, 2vw, 12px) clamp(16px, 4vw, 24px)',
         }}
       >
         ⬅️ 返回首页
       </Link>
 
       {/* Project Title */}
-      <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-        <h1 style={{ marginBottom: '16px', fontSize: '3.5rem' }}>🎰 {project.name}</h1>
-        <p style={{ fontSize: '1.25rem', color: 'var(--deep-purple)', opacity: 0.8, fontFamily: "Fredoka One, cursive" }}>
+      <div style={{ textAlign: 'center', marginBottom: 'clamp(24px, 6vw, 48px)' }}>
+        <h1 style={{ marginBottom: 'clamp(8px, 2vw, 16px)', fontSize: 'clamp(2rem, 6vw, 3.5rem)' }}>🎰 {project.name}</h1>
+        <p style={{ fontSize: 'clamp(1rem, 3vw, 1.25rem)', color: 'var(--deep-purple)', opacity: 0.8, fontFamily: "Fredoka One, cursive" }}>
           点击按钮开始随机选择！
         </p>
       </div>
@@ -174,13 +175,13 @@ export default function ProjectDetail() {
           className="arcade-card stagger-in"
           style={{
             textAlign: 'center',
-            padding: '64px 32px',
+            padding: 'clamp(32px, 8vw, 64px) clamp(16px, 4vw, 32px)',
             background: 'linear-gradient(135deg, #FFE8D4 0%, #E8E4FF 100%)',
           }}
         >
-          <div style={{ fontSize: '80px', marginBottom: '20px' }}>👥</div>
-          <h3 style={{ fontSize: '2rem', marginBottom: '12px' }}>还没有{candidateTerm}</h3>
-          <p style={{ fontSize: '1.125rem', opacity: 0.8, marginBottom: '24px' }}>请先到{candidateTerm}管理页面添加{candidateTerm}</p>
+          <div style={{ fontSize: 'clamp(48px, 12vw, 80px)', marginBottom: 'clamp(12px, 3vw, 20px)' }}>👥</div>
+          <h3 style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', marginBottom: 'clamp(8px, 2vw, 12px)' }}>还没有{candidateTerm}</h3>
+          <p style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)', opacity: 0.8, marginBottom: 'clamp(12px, 3vw, 24px)' }}>请先到{candidateTerm}管理页面添加{candidateTerm}</p>
           <Link to="/candidates" className="arcade-btn arcade-btn-accent">
             去添加{candidateTerm}
           </Link>
@@ -188,7 +189,12 @@ export default function ProjectDetail() {
       ) : (
         <>
           {/* Candidates Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(180px, 45vw, 220px), 1fr))',
+            gap: 'clamp(12px, 3vw, 24px)',
+            marginBottom: 'clamp(20px, 5vw, 40px)'
+          }}>
             {candidates.map((candidate, index) => {
               const isSelected = index === selectedIndex;
               const isDimmed = isSelecting && !isSelected;
@@ -198,12 +204,12 @@ export default function ProjectDetail() {
                   key={candidate.id}
                   className="arcade-card"
                   style={{
-                    padding: '32px 24px',
+                    padding: 'clamp(16px, 4vw, 32px) clamp(12px, 3vw, 24px)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    minHeight: '240px',
+                    minHeight: 'clamp(180px, 45vw, 240px)',
                     opacity: isDimmed ? 0.3 : 1,
                     transform: isSelected ? 'scale(1.15) rotate(3deg)' : isSelecting ? 'scale(0.95)' : 'scale(1)',
                     transition: 'all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)',
@@ -221,20 +227,20 @@ export default function ProjectDetail() {
                     animation: isSelected ? 'pulse 0.5s ease-in-out infinite' : 'none',
                   }}
                 >
-                  <div style={{ marginBottom: '16px' }}>
+                  <div style={{ marginBottom: 'clamp(8px, 2vw, 16px)' }}>
                     <Avatar photoUrl={candidate.photo_url} size={100} />
                   </div>
-                  <h3 style={{ fontSize: '1.5rem', textAlign: 'center' }}>{candidate.name}</h3>
+                  <h3 style={{ fontSize: 'clamp(1.125rem, 3vw, 1.5rem)', textAlign: 'center' }}>{candidate.name}</h3>
                   {isSelected && (
                     <div
                       style={{
-                        marginTop: '12px',
-                        padding: '8px 16px',
+                        marginTop: 'clamp(6px, 1.5vw, 12px)',
+                        padding: 'clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 16px)',
                         background: 'var(--sunset-orange)',
                         color: 'white',
                         borderRadius: '999px',
                         fontFamily: "Fredoka One, cursive",
-                        fontSize: '1rem',
+                        fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
                         border: '2px solid var(--deep-purple)',
                         boxShadow: '2px 2px 0 var(--deep-purple)',
                         animation: 'bounce 0.6s ease-in-out infinite',
@@ -255,8 +261,8 @@ export default function ProjectDetail() {
               disabled={isSelecting}
               className="arcade-btn arcade-btn-primary"
               style={{
-                padding: '20px 64px',
-                fontSize: '1.75rem',
+                padding: 'clamp(12px, 3vw, 20px) clamp(32px, 10vw, 64px)',
+                fontSize: 'clamp(1.125rem, 3vw, 1.75rem)',
                 opacity: isSelecting ? 0.6 : 1,
                 cursor: isSelecting ? 'not-allowed' : 'pointer',
               }}
@@ -282,6 +288,7 @@ export default function ProjectDetail() {
             backgroundColor: 'rgba(26, 26, 46, 0.9)',
             zIndex: 100,
             backdropFilter: 'blur(8px)',
+            padding: 'clamp(16px, 4vw, 32px)',
           }}
           onClick={() => {
             setWinner(null);
@@ -314,20 +321,20 @@ export default function ProjectDetail() {
             className="arcade-card"
             style={{
               background: 'white',
-              padding: '48px',
+              padding: 'clamp(24px, 6vw, 48px)',
               textAlign: 'center',
-              maxWidth: '480px',
+              maxWidth: 'clamp(320px, 90vw, 480px)',
               animation: 'slideInUp 0.5s ease-out',
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ fontSize: '80px', marginBottom: '20px', animation: 'bounce 1s ease-in-out infinite' }}>
+            <div style={{ fontSize: 'clamp(48px, 12vw, 80px)', marginBottom: 'clamp(12px, 3vw, 20px)', animation: 'bounce 1s ease-in-out infinite' }}>
               🎉
             </div>
-            <h2 style={{ fontSize: '2.5rem', marginBottom: '16px' }}>恭喜</h2>
-            <p style={{ fontSize: '1.125rem', marginBottom: '24px', opacity: 0.8 }}>获胜者是</p>
+            <h2 style={{ fontSize: 'clamp(1.75rem, 5vw, 2.5rem)', marginBottom: 'clamp(8px, 2vw, 16px)' }}>恭喜</h2>
+            <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.125rem)', marginBottom: 'clamp(12px, 3vw, 24px)', opacity: 0.8 }}>获胜者是</p>
 
-            <div style={{ margin: '0 auto 24px' }}>
+            <div style={{ margin: '0 auto clamp(12px, 3vw, 24px)' }}>
               <Avatar
                 photoUrl={winner.photo_url}
                 size={140}
@@ -335,7 +342,7 @@ export default function ProjectDetail() {
               />
             </div>
 
-            <h3 style={{ fontSize: '2.5rem', color: 'var(--neon-pink)', marginBottom: '32px' }}>
+            <h3 style={{ fontSize: 'clamp(1.75rem, 5vw, 2.5rem)', color: 'var(--neon-pink)', marginBottom: 'clamp(16px, 4vw, 32px)' }}>
               {winner.name}
             </h3>
 
@@ -345,7 +352,7 @@ export default function ProjectDetail() {
                 setShowConfetti(false);
               }}
               className="arcade-btn arcade-btn-primary"
-              style={{ fontSize: '1.25rem' }}
+              style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)' }}
             >
               确定
             </button>

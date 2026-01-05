@@ -53,7 +53,7 @@ RUN addgroup --gid 1000 whotakesshowers && \
     adduser --uid 1001 --gid 1000 whotakesshowers
 
 # 创建必要的目录
-RUN mkdir -p /app/uploads /app/data
+RUN mkdir -p /app/uploads /app/data /app/log
 
 WORKDIR /app
 

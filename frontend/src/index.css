@@ -344,3 +344,127 @@ h3 {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--electric-blue);
 }
+
+/* ========================================
+   Responsive Design - Mobile Breakpoints
+   ======================================== */
+
+/* Small devices (landscape phones, less than 768px) */
+@media (max-width: 767.98px) {
+  h1 {
+    font-size: 2rem;
+    text-shadow: 2px 2px 0 var(--electric-blue);
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  /* Reduce card shadow on mobile */
+  .arcade-card {
+    box-shadow: 2px 2px 0 var(--deep-purple);
+  }
+
+  .arcade-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 3px 3px 0 var(--deep-purple);
+  }
+
+  /* Smaller buttons on mobile */
+  .arcade-btn {
+    font-size: 1rem;
+    padding: 12px 20px;
+    box-shadow: 2px 2px 0 var(--deep-purple);
+  }
+
+  .arcade-btn:hover {
+    box-shadow: 3px 3px 0 var(--deep-purple);
+  }
+
+  /* Smaller inputs on mobile */
+  .arcade-input {
+    padding: 12px 16px;
+    font-size: 1rem;
+    box-shadow: 2px 2px 0 var(--deep-purple);
+  }
+
+  /* Smaller tags on mobile */
+  .arcade-tag {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+
+  /* Background blobs smaller on mobile */
+  .blob-1 {
+    width: 200px;
+    height: 200px;
+    top: -50px;
+    right: -50px;
+  }
+
+  .blob-2 {
+    width: 150px;
+    height: 150px;
+    bottom: -25px;
+    left: -25px;
+  }
+
+  .blob-3 {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* Extra small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) {
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  /* Even smaller buttons on very small screens */
+  .arcade-btn {
+    font-size: 0.875rem;
+    padding: 10px 16px;
+  }
+
+  /* Smaller inputs on very small screens */
+  .arcade-input {
+    padding: 10px 14px;
+    font-size: 0.875rem;
+  }
+
+  /* Reduce loader size */
+  .arcade-loader span {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Disable hover effects on touch devices */
+  .arcade-card:hover {
+    transform: none;
+  }
+
+  .arcade-btn:hover {
+    transform: none;
+  }
+
+  /* Add active state for touch */
+  .arcade-card:active {
+    transform: scale(0.98);
+  }
+
+  .arcade-btn:active {
+    transform: scale(0.95);
+  }
+}
