@@ -1,23 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { apiClient, type Project, type Candidate } from '../api';
 import { getCandidateTerm } from '../utils/candidateTerm';
-
-const API_BASE_URL = 'http://localhost:8080/api';
-
-interface Project {
-  id: string;
-  name: string;
-  candidate_ids: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface Candidate {
-  id: string;
-  name: string;
-  photo_url?: string;
-}
 
 export default function Home() {
   const navigate = useNavigate();
@@ -52,8 +36,8 @@ export default function Home() {
   const loadData = async () => {
     try {
       const [projectsRes, candidatesRes] = await Promise.all([
-        axios.get<Project[]>(`${API_BASE_URL}/projects`),
-        axios.get<Candidate[]>(`${API_BASE_URL}/candidates`),
+        apiClient.getProjects(),
+        apiClient.getCandidates(),
       ]);
       setProjects(projectsRes.data);
       setCandidates(candidatesRes.data);
@@ -66,7 +50,7 @@ export default function Home() {
 
   const loadProjects = async () => {
     try {
-      const response = await axios.get<Project[]>(`${API_BASE_URL}/projects`);
+      const response = await apiClient.getProjects();
       setProjects(response.data);
     } catch (error) {
       console.error('Failed to load projects:', error);
@@ -89,7 +73,7 @@ export default function Home() {
     }
 
     try {
-      await axios.post(`${API_BASE_URL}/projects`, {
+      await apiClient.createProject({
         name: newProjectName,
         candidate_ids: selectedCandidateIds,
       });
@@ -126,7 +110,7 @@ export default function Home() {
     try {
       await Promise.all(
         Array.from(selectedProjectIds).map((id) =>
-          axios.delete(`${API_BASE_URL}/projects/${id}`)
+          apiClient.deleteProject(id)
         )
       );
       setSelectedProjectIds(new Set());

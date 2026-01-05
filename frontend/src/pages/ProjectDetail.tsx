@@ -1,24 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
 import Avatar from '../components/Avatar';
 import { getCandidateTerm } from '../utils/candidateTerm';
-
-const API_BASE_URL = 'http://localhost:8080/api';
-
-interface Project {
-  id: string;
-  name: string;
-  candidate_ids: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface Candidate {
-  id: string;
-  name: string;
-  photo_url?: string;
-}
+import { apiClient, type Project, type Candidate } from '../api';
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
@@ -54,8 +38,8 @@ export default function ProjectDetail() {
     if (!id) return;
     try {
       const [projectRes, candidatesRes] = await Promise.all([
-        axios.get<Project>(`${API_BASE_URL}/projects/${id}`),
-        axios.get<Candidate[]>(`${API_BASE_URL}/candidates`),
+        apiClient.getProject(id!),
+        apiClient.getCandidates(),
       ]);
 
       setProject(projectRes.data);
@@ -108,7 +92,7 @@ export default function ProjectDetail() {
 
   const finalizeSelection = async () => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/randomize`, { project_id: id });
+      const response = await apiClient.randomize(id!);
       const winnerId = response.data.candidate_id;
       const wIndex = candidates.findIndex((c) => c.id === winnerId);
       setSelectedIndex(wIndex);

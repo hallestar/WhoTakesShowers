@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"whotakesshowers/internal/middleware"
 	"whotakesshowers/internal/model"
 	"whotakesshowers/internal/store"
 
@@ -17,7 +18,16 @@ var projectHandler = &ProjectHandler{}
 // ListProjects 获取项目列表
 // GET /api/projects
 func ListProjects(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	projects, err := store.Projects.List(userID)
 	if err != nil {
@@ -37,7 +47,16 @@ type CreateProjectRequest struct {
 // CreateProject 创建项目
 // POST /api/projects
 func CreateProject(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	var req CreateProjectRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -78,7 +97,16 @@ type UpdateProjectRequest struct {
 // UpdateProject 更新项目
 // PUT /api/projects/:id
 func UpdateProject(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -123,7 +151,16 @@ func UpdateProject(c *gin.Context) {
 // GetProject 获取项目详情
 // GET /api/projects/:id
 func GetProject(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -143,7 +180,16 @@ func GetProject(c *gin.Context) {
 // DeleteProject 删除项目
 // DELETE /api/projects/:id
 func DeleteProject(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {

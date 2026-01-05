@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getToken } from './utils/auth';
 
 // 从环境变量读取 API 地址，支持开发环境动态配置
 const getApiBaseUrl = () => {
@@ -21,6 +22,34 @@ const api = axios.create({
   },
 });
 
+// 请求拦截器：自动添加Token
+api.interceptors.request.use(
+  (config) => {
+    const token = getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// 响应拦截器：处理401错误
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token过期或无效，清除本地存储并跳转到登录页
+      localStorage.removeItem('whotakesshowers_token');
+      localStorage.removeItem('whotakesshowers_user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 // 输出当前使用的 API 地址（开发时方便调试）
 if (import.meta.env.DEV) {
   console.log('🔧 API Base URL:', API_BASE_URL);
@@ -33,6 +62,14 @@ export interface Candidate {
   photo_url?: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface CandidatePhoto {
+  id: string;
+  candidate_id: string;
+  photo_url: string;
+  is_avatar: boolean;
+  created_at: string;
 }
 
 export interface Project {
@@ -86,6 +123,22 @@ export const apiClient = {
       },
     });
   },
+
+  // 候选人照片相关
+  getCandidatePhotos: (id: string) => api.get(`/candidates/${id}/photos`),
+  uploadCandidatePhotos: (id: string, files: File[]) => {
+    const formData = new FormData();
+    files.forEach(file => formData.append('photos', file));
+    return api.post(`/candidates/${id}/photos`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+  setCandidateAvatar: (id: string, photo_id: string) =>
+    api.put(`/candidates/${id}/avatar`, { photo_id }),
+  deleteCandidatePhoto: (candidateId: string, photoId: string) =>
+    api.delete(`/candidates/${candidateId}/photos/${photoId}`),
 
   // 历史记录相关
   getHistory: (params?: { project_id?: string; limit?: number }) =>

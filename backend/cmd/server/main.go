@@ -85,10 +85,12 @@ func main() {
 	})
 
 	// 启动服务器
-	addr := ":" + os.Getenv("PORT")
-	if addr == ":" {
-		addr = ":8080"
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
 	}
+	// 监听在 0.0.0.0 以允许外部设备访问
+	addr := "0.0.0.0:" + port
 	logger.Info("Server is ready", zap.String("address", addr))
 
 	if err := r.Run(addr); err != nil {

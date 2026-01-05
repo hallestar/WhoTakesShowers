@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"whotakesshowers/internal/logger"
+	"whotakesshowers/internal/middleware"
 	"whotakesshowers/internal/model"
 	"whotakesshowers/internal/store"
 
@@ -14,7 +15,16 @@ import (
 // ListCandidatePhotos 获取候选人的所有照片
 // GET /api/candidates/:id/photos
 func ListCandidatePhotos(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -57,7 +67,16 @@ func ListCandidatePhotos(c *gin.Context) {
 // UploadCandidatePhotos 上传候选人的多张照片
 // POST /api/candidates/:id/photos
 func UploadCandidatePhotos(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -184,7 +203,16 @@ type SetAvatarRequest struct {
 // SetCandidateAvatar 设置候选人的头像
 // PUT /api/candidates/:id/avatar
 func SetCandidateAvatar(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -270,7 +298,16 @@ func SetCandidateAvatar(c *gin.Context) {
 // DeleteCandidatePhoto 删除候选人的照片
 // DELETE /api/candidates/:id/photos/:photo_id
 func DeleteCandidatePhoto(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {

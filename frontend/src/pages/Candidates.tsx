@@ -1,26 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import Avatar from '../components/Avatar';
 import { getCandidateTerm } from '../utils/candidateTerm';
-
-const API_BASE_URL = 'http://localhost:8080/api';
-
-interface Candidate {
-  id: string;
-  name: string;
-  photo_url?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface CandidatePhoto {
-  id: string;
-  candidate_id: string;
-  photo_url: string;
-  is_avatar: boolean;
-  created_at: string;
-}
+import { apiClient, type Candidate, type CandidatePhoto } from '../api';
 
 interface CandidateWithPhotos extends Candidate {
   photos?: CandidatePhoto[];
@@ -65,7 +47,7 @@ export default function Candidates() {
 
   const loadCandidates = async () => {
     try {
-      const response = await axios.get<Candidate[]>(`${API_BASE_URL}/candidates`);
+      const response = await apiClient.getCandidates();
       setCandidates(response.data);
 
       // 加载每个候选人的照片
@@ -81,7 +63,7 @@ export default function Candidates() {
 
   const loadCandidatePhotos = async (candidateId: string) => {
     try {
-      const response = await axios.get<CandidatePhoto[]>(`${API_BASE_URL}/candidates/${candidateId}/photos`);
+      const response = await apiClient.getCandidatePhotos(candidateId);
       setCandidatePhotos(prev => ({
         ...prev,
         [candidateId]: response.data,
@@ -96,7 +78,7 @@ export default function Candidates() {
     if (!newCandidateName.trim()) return;
 
     try {
-      await axios.post(`${API_BASE_URL}/candidates`, { name: newCandidateName });
+      await apiClient.createCandidate({ name: newCandidateName });
       setNewCandidateName('');
       setShowAddForm(false);
       await loadCandidates();
@@ -110,7 +92,7 @@ export default function Candidates() {
     if (!editName.trim()) return;
 
     try {
-      await axios.put(`${API_BASE_URL}/candidates/${id}`, { name: editName });
+      await apiClient.updateCandidate(id, { name: editName });
       setEditingId(null);
       await loadCandidates();
     } catch (error) {
@@ -123,7 +105,7 @@ export default function Candidates() {
     if (!confirm(`确定要删除这个${candidateTerm}吗？`)) return;
 
     try {
-      await axios.delete(`${API_BASE_URL}/candidates/${id}`);
+      await apiClient.deleteCandidate(id);
       await loadCandidates();
     } catch (error) {
       console.error('Failed to delete candidate:', error);
@@ -134,19 +116,13 @@ export default function Candidates() {
   const handlePhotoUpload = async (id: string, files: FileList | null) => {
     if (!files || files.length === 0) return;
 
-    const formData = new FormData();
-    // 支持多张照片上传
-    for (let i = 0; i < files.length; i++) {
-      formData.append('photos', files[i]);
-    }
+    const fileArray = Array.from(files);
 
     try {
-      await axios.post(`${API_BASE_URL}/candidates/${id}/photos`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      await apiClient.uploadCandidatePhotos(id, fileArray);
       await loadCandidatePhotos(id);
       await loadCandidates();
-      alert(`成功上传 ${files.length} 张照片！`);
+      alert(`成功上传 ${fileArray.length} 张照片！`);
     } catch (error) {
       console.error('Failed to upload photos:', error);
       alert('照片上传失败');
@@ -158,9 +134,11 @@ export default function Candidates() {
 
     if (!confirm(`确定要删除选中的 ${selectedPhotoIds.size} 张照片吗？`)) return;
 
+    if (!currentCandidateId) return;
+
     try {
       for (const photoId of selectedPhotoIds) {
-        await axios.delete(`${API_BASE_URL}/candidates/${currentCandidateId}/photos/${photoId}`);
+        await apiClient.deleteCandidatePhoto(currentCandidateId, photoId);
       }
 
       if (currentCandidateId) {
@@ -798,9 +776,7 @@ export default function Candidates() {
                   onClick={async () => {
                     if (!currentCandidateId) return;
                     try {
-                      await axios.put(`${API_BASE_URL}/candidates/${currentCandidateId}/avatar`, {
-                        photo_id: modalPhotos[currentPhotoIndex].id,
-                      });
+                      await apiClient.setCandidateAvatar(currentCandidateId, modalPhotos[currentPhotoIndex].id);
                       await loadCandidatePhotos(currentCandidateId);
                       await loadCandidates();
                       alert('头像设置成功！');

@@ -1,18 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:8080/api';
-
-interface History {
-  id: string;
-  project_id: string;
-  project_name: string;
-  candidate_id: string;
-  candidate_name: string;
-  selected_at: string;
-  user_id: string;
-}
+import { apiClient, type History } from '../api';
 
 export default function HistoryPage() {
   const [histories, setHistories] = useState<History[]>([]);
@@ -24,7 +12,7 @@ export default function HistoryPage() {
 
   const loadHistory = async () => {
     try {
-      const response = await axios.get<History[]>(`${API_BASE_URL}/history?limit=50`);
+      const response = await apiClient.getHistory({ limit: 50 });
       setHistories(response.data);
     } catch (error) {
       console.error('Failed to load history:', error);

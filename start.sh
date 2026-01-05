@@ -8,7 +8,26 @@ BACKEND_HOST="${BACKEND_HOST:-0.0.0.0}"
 BACKEND_PORT="${BACKEND_PORT:-8080}"
 FRONTEND_HOST="${FRONTEND_HOST:-0.0.0.0}"
 FRONTEND_PORT="${FRONTEND_PORT:-5173}"
-API_BASE_URL="${API_BASE_URL:-http://localhost:${BACKEND_PORT}}"
+USE_LAN_IP="${USE_LAN_IP:-false}"
+
+# 自动检测局域网IP
+get_local_ip() {
+    # macOS
+    ipconfig getifaddr en0 2>/dev/null || \
+    ipconfig getifaddr en1 2>/dev/null || \
+    # Linux
+    hostname -I 2>/dev/null | awk '{print $1}' || \
+    # 无法获取时使用localhost
+    echo "localhost"
+}
+
+# 设置API_BASE_URL
+if [ "$USE_LAN_IP" = "true" ]; then
+    LOCAL_IP=$(get_local_ip)
+    API_BASE_URL="${API_BASE_URL:-http://${LOCAL_IP}:${BACKEND_PORT}}"
+else
+    API_BASE_URL="${API_BASE_URL:-http://localhost:${BACKEND_PORT}}"
+fi
 
 # 解析命令行参数
 while [[ $# -gt 0 ]]; do
@@ -33,6 +52,12 @@ while [[ $# -gt 0 ]]; do
             API_BASE_URL="$2"
             shift 2
             ;;
+        --lan)
+            USE_LAN_IP="true"
+            LOCAL_IP=$(get_local_ip)
+            API_BASE_URL="http://${LOCAL_IP}:${BACKEND_PORT}"
+            shift
+            ;;
         -h|--help)
             echo "用法: $0 [选项]"
             echo ""
@@ -40,6 +65,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --backend HOST:PORT      后端绑定地址和端口 (默认: 0.0.0.0:8080)"
             echo "  --frontend HOST:PORT     前端绑定地址和端口 (默认: 0.0.0.0:5173)"
             echo "  --api-url URL            API 基础 URL (默认: http://localhost:8080)"
+            echo "  --lan                    使用局域网IP (支持移动端访问)"
             echo "  -h, --help               显示此帮助信息"
             echo ""
             echo "环境变量:"
@@ -48,11 +74,13 @@ while [[ $# -gt 0 ]]; do
             echo "  FRONTEND_HOST            前端主机地址 (默认: 0.0.0.0)"
             echo "  FRONTEND_PORT            前端端口 (默认: 5173)"
             echo "  API_BASE_URL             API 基础 URL"
+            echo "  USE_LAN_IP               使用局域网IP (true/false)"
             echo ""
             echo "示例:"
             echo "  $0                                    # 使用默认配置"
             echo "  $0 --backend 0.0.0.0:9090             # 后端使用 9090 端口"
             echo "  $0 --frontend 0.0.0.0:3000            # 前端使用 3000 端口"
+            echo "  $0 --lan                             # 使用局域网IP (移动端可访问)"
             echo "  BACKEND_PORT=9090 $0                  # 通过环境变量设置"
             echo "  $0 --backend 0.0.0.0:9090 --frontend 0.0.0.0:3000"
             exit 0
@@ -97,6 +125,9 @@ echo "配置信息:"
 echo "  后端: ${BACKEND_HOST}:${BACKEND_PORT}"
 echo "  前端: ${FRONTEND_HOST}:${FRONTEND_PORT}"
 echo "  API: ${API_BASE_URL}"
+if [ "$USE_LAN_IP" = "true" ]; then
+    echo "  📱 局域网IP: ${LOCAL_IP} (移动端可访问)"
+fi
 echo ""
 
 # 检查后端
@@ -182,6 +213,13 @@ if [ "$FRONTEND_HOST" = "0.0.0.0" ]; then
     echo "   前端界面: http://localhost:${FRONTEND_PORT}"
 else
     echo "   前端界面: http://${FRONTEND_HOST}:${FRONTEND_PORT}"
+fi
+
+if [ "$USE_LAN_IP" = "true" ]; then
+    echo ""
+    echo "📱 移动端访问地址:"
+    echo "   前端: http://${LOCAL_IP}:${FRONTEND_PORT}"
+    echo "   后端: http://${LOCAL_IP}:${BACKEND_PORT}"
 fi
 echo ""
 echo "按 Ctrl+C 停止所有服务"

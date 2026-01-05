@@ -10,7 +10,9 @@ import (
 // User 用户模型
 type User struct {
 	ID        uuid.UUID `gorm:"type:uuid;primary_key" json:"id"`
-	Username  string    `gorm:"type:varchar(100)" json:"username"`
+	Username  string    `gorm:"type:varchar(50);uniqueIndex;not null" json:"username"`
+	Email     string    `gorm:"type:varchar(100);uniqueIndex" json:"email"`
+	Password  string    `gorm:"type:varchar(255)" json:"-"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

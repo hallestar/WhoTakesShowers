@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"whotakesshowers/internal/logger"
+	"whotakesshowers/internal/middleware"
 	"whotakesshowers/internal/model"
 	"whotakesshowers/internal/store"
 
@@ -14,7 +15,16 @@ import (
 // ListCandidates 获取候选人列表
 // GET /api/candidates
 func ListCandidates(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	candidates, err := store.Candidates.List(userID)
 	if err != nil {
@@ -41,7 +51,16 @@ type CreateCandidateRequest struct {
 // CreateCandidate 创建候选人
 // POST /api/candidates
 func CreateCandidate(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	var req CreateCandidateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -85,7 +104,16 @@ type UpdateCandidateRequest struct {
 // UpdateCandidate 更新候选人
 // PUT /api/candidates/:id
 func UpdateCandidate(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -143,7 +171,16 @@ func UpdateCandidate(c *gin.Context) {
 // GetCandidate 获取候选人详情
 // GET /api/candidates/:id
 func GetCandidate(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -167,7 +204,16 @@ func GetCandidate(c *gin.Context) {
 // DeleteCandidate 删除候选人
 // DELETE /api/candidates/:id
 func DeleteCandidate(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -194,7 +240,16 @@ func DeleteCandidate(c *gin.Context) {
 // UploadCandidatePhoto 上传候选人照片
 // POST /api/candidates/:id/photo
 func UploadCandidatePhoto(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {

@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"whotakesshowers/internal/middleware"
 	"whotakesshowers/internal/service"
 	"whotakesshowers/internal/store"
 
@@ -13,7 +14,16 @@ import (
 // ListHistory 获取历史记录
 // GET /api/history
 func ListHistory(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	var projectID *uuid.UUID
 	if projectIDStr := c.Query("project_id"); projectIDStr != "" {
@@ -44,7 +54,16 @@ func ListHistory(c *gin.Context) {
 // Randomize 执行随机选择
 // POST /api/randomize
 func Randomize(c *gin.Context) {
-	userID := store.GetDefaultUserID()
+	userIDStr, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未认证"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的用户ID"})
+		return
+	}
 
 	var req service.RandomizeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
