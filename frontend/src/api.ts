@@ -13,6 +13,29 @@ const getApiBaseUrl = () => {
   return import.meta.env.DEV ? 'http://localhost:8080/api' : '/api';
 };
 
+// 获取服务器基础 URL（用于照片等静态资源）
+export const getServerBaseUrl = () => {
+  const envApiUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envApiUrl) {
+    // 移除 /api 后缀
+    return envApiUrl.endsWith('/api') ? envApiUrl.slice(0, -4) : envApiUrl;
+  }
+  // 生产环境使用空字符串（相对路径），开发环境使用完整地址
+  return import.meta.env.DEV ? 'http://localhost:8080' : '';
+};
+
+// 获取完整的照片 URL
+export const getPhotoUrl = (photoPath: string) => {
+  if (!photoPath) return '';
+  // 如果已经是完整 URL，直接返回
+  if (photoPath.startsWith('http://') || photoPath.startsWith('https://')) {
+    return photoPath;
+  }
+  // 拼接服务器基础 URL
+  const baseUrl = getServerBaseUrl();
+  return baseUrl + photoPath;
+};
+
 const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({

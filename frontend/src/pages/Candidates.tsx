@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Avatar from '../components/Avatar';
 import { getCandidateTerm } from '../utils/candidateTerm';
-import { apiClient, type Candidate, type CandidatePhoto } from '../api';
+import { apiClient, getPhotoUrl, type Candidate, type CandidatePhoto } from '../api';
 
 interface CandidateWithPhotos extends Candidate {
   photos?: CandidatePhoto[];
@@ -462,7 +462,7 @@ export default function Candidates() {
                           }}
                         >
                           <img
-                            src={photo.photo_url}
+                            src={getPhotoUrl(photo.photo_url)}
                             alt={`Photo ${photoIndex + 1}`}
                             style={{
                               width: '100%',
@@ -655,7 +655,7 @@ export default function Candidates() {
                 }}
               >
                 <img
-                  src={modalPhotos[currentPhotoIndex]?.photo_url}
+                  src={getPhotoUrl(modalPhotos[currentPhotoIndex]?.photo_url || '')}
                   alt="Enlarged photo"
                   style={{
                     maxWidth: '100%',

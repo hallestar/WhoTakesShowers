@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { getPhotoUrl } from '../api';
 
 interface AvatarProps {
   photoUrl?: string;
@@ -19,7 +20,7 @@ export default function Avatar({ photoUrl, size = 100, className = '' }: AvatarP
 
   const avatarConfig = useMemo(() => {
     if (photoUrl && photoUrl.trim() !== '') {
-      return { type: 'photo', url: photoUrl };
+      return { type: 'photo', url: getPhotoUrl(photoUrl) };
     }
 
     if (settings.randomAvatar) {
