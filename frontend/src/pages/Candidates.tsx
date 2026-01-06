@@ -462,7 +462,7 @@ export default function Candidates() {
                           }}
                         >
                           <img
-                            src={`http://localhost:8080${photo.photo_url}`}
+                            src={photo.photo_url}
                             alt={`Photo ${photoIndex + 1}`}
                             style={{
                               width: '100%',
@@ -655,7 +655,7 @@ export default function Candidates() {
                 }}
               >
                 <img
-                  src={`http://localhost:8080${modalPhotos[currentPhotoIndex]?.photo_url}`}
+                  src={modalPhotos[currentPhotoIndex]?.photo_url}
                   alt="Enlarged photo"
                   style={{
                     maxWidth: '100%',

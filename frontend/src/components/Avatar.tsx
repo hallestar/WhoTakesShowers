@@ -34,7 +34,7 @@ export default function Avatar({ photoUrl, size = 100, className = '' }: AvatarP
   if (avatarConfig.type === 'photo') {
     return (
       <img
-        src={`http://localhost:8080${avatarConfig.url}`}
+        src={avatarConfig.url}
         alt="avatar"
         className={className}
         style={{

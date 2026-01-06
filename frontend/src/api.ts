@@ -9,8 +9,8 @@ const getApiBaseUrl = () => {
     // 如果环境变量已包含 /api，直接使用
     return envApiUrl.endsWith('/api') ? envApiUrl : `${envApiUrl}/api`;
   }
-  // 默认地址
-  return 'http://localhost:8080/api';
+  // 默认使用相对路径（生产环境）或本地开发地址
+  return import.meta.env.DEV ? 'http://localhost:8080/api' : '/api';
 };
 
 const API_BASE_URL = getApiBaseUrl();

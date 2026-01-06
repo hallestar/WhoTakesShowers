@@ -1,6 +1,16 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+// 获取 API 基础 URL，与 api.ts 保持一致
+const getApiBaseUrl = () => {
+  const envApiUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envApiUrl) {
+    return envApiUrl.endsWith('/api') ? envApiUrl : `${envApiUrl}/api`;
+  }
+  // 默认使用相对路径（生产环境）或本地开发地址
+  return import.meta.env.DEV ? 'http://localhost:8080/api' : '/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const TOKEN_KEY = 'whotakesshowers_token';
 const USER_KEY = 'whotakesshowers_user';
@@ -59,7 +69,7 @@ export const isAuthenticated = (): boolean => {
 
 // 注册
 export const register = async (username: string, email: string, password: string): Promise<AuthResponse> => {
-  const response = await axios.post<AuthResponse>(`${API_BASE_URL}/api/auth/register`, {
+  const response = await axios.post<AuthResponse>(`${API_BASE_URL}/auth/register`, {
     username,
     email,
     password,
@@ -69,7 +79,7 @@ export const register = async (username: string, email: string, password: string
 
 // 登录
 export const login = async (username: string, password: string): Promise<AuthResponse> => {
-  const response = await axios.post<AuthResponse>(`${API_BASE_URL}/api/auth/login`, {
+  const response = await axios.post<AuthResponse>(`${API_BASE_URL}/auth/login`, {
     username,
     password,
   });
