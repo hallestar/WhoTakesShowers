@@ -269,9 +269,9 @@ export default function ProjectDetail() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: 'rgba(26, 26, 46, 0.9)',
+            backgroundColor: 'rgba(26, 26, 46, 0.95)',
             zIndex: 100,
-            backdropFilter: 'blur(8px)',
+            backdropFilter: 'blur(10px)',
             padding: 'clamp(16px, 4vw, 32px)',
           }}
           onClick={() => {
@@ -279,56 +279,217 @@ export default function ProjectDetail() {
             setShowConfetti(false);
           }}
         >
-          {/* Confetti Effect */}
+          {/* Enhanced Confetti Effect */}
           {showConfetti && (
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none' }}>
-              {[...Array(50)].map((_, i) => (
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+              {/* Confetti */}
+              {[...Array(80)].map((_, i) => (
                 <div
-                  key={i}
+                  key={`confetti-${i}`}
                   style={{
                     position: 'absolute',
-                    width: '12px',
-                    height: '12px',
-                    backgroundColor: ['#00D4FF', '#FF2E93', '#CCFF00', '#FF6B00'][i % 4],
-                    top: '-20px',
+                    width: `${10 + Math.random() * 12}px`,
+                    height: `${10 + Math.random() * 12}px`,
+                    backgroundColor: ['#00D4FF', '#FF2E93', '#CCFF00', '#FF6B00', '#FFE700', '#FF1493'][i % 6],
+                    top: '-30px',
                     left: `${Math.random() * 100}%`,
-                    animation: `confettiFall ${1.5 + Math.random()}s ease-in forwards`,
-                    animationDelay: `${Math.random() * 0.5}s`,
-                    borderRadius: Math.random() > 0.5 ? '50%' : '0',
+                    animation: `confettiFall ${1.2 + Math.random() * 0.8}s ease-in forwards`,
+                    animationDelay: `${Math.random() * 0.6}s`,
+                    borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+                  }}
+                />
+              ))}
+              {/* Stars */}
+              {[...Array(20)].map((_, i) => (
+                <div
+                  key={`star-${i}`}
+                  style={{
+                    position: 'absolute',
+                    fontSize: `${20 + Math.random() * 24}px`,
+                    top: '-40px',
+                    left: `${Math.random() * 100}%`,
+                    animation: `starFall ${1.5 + Math.random()}s ease-in forwards`,
+                    animationDelay: `${Math.random() * 0.8}s`,
+                  }}
+                >
+                  ⭐
+                </div>
+              ))}
+              {/* Sparkles */}
+              {[...Array(30)].map((_, i) => (
+                <div
+                  key={`sparkle-${i}`}
+                  style={{
+                    position: 'absolute',
+                    width: '6px',
+                    height: '6px',
+                    backgroundColor: '#FFE700',
+                    top: `${Math.random() * 100}%`,
+                    left: `${Math.random() * 100}%`,
+                    animation: `sparkle ${0.8 + Math.random() * 0.4}s ease-in-out infinite`,
+                    animationDelay: `${Math.random() * 1}s`,
+                    borderRadius: '50%',
+                    boxShadow: '0 0 10px #FFE700, 0 0 20px #FFE700',
                   }}
                 />
               ))}
             </div>
           )}
 
+          {/* Rainbow Ring Animation */}
+          {showConfetti && (
+            <div
+              style={{
+                position: 'absolute',
+                width: 'clamp(350px, 80vw, 500px)',
+                height: 'clamp(350px, 80vw, 500px)',
+                borderRadius: '50%',
+                border: '8px solid transparent',
+                borderTopColor: '#FF2E93',
+                borderRightColor: '#00D4FF',
+                borderBottomColor: '#CCFF00',
+                borderLeftColor: '#FF6B00',
+                animation: 'rainbowRing 2s linear infinite',
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+
           <div
             className="arcade-card"
             style={{
-              background: 'white',
-              padding: 'clamp(24px, 6vw, 48px)',
+              background: 'linear-gradient(135deg, #FFFFFF 0%, #FFF5E6 100%)',
+              padding: 'clamp(32px, 8vw, 64px)',
               textAlign: 'center',
-              maxWidth: 'clamp(320px, 90vw, 480px)',
-              animation: 'slideInUp 0.5s ease-out',
+              maxWidth: 'clamp(360px, 90vw, 520px)',
+              animation: 'slideInUp 0.5s ease-out, glowPulse 1.5s ease-in-out infinite',
+              position: 'relative',
+              borderRadius: '24px',
+              border: '6px solid',
+              borderImage: 'linear-gradient(45deg, #FF2E93, #00D4FF, #CCFF00, #FF6B00) 1',
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ fontSize: 'clamp(48px, 12vw, 80px)', marginBottom: 'clamp(12px, 3vw, 20px)', animation: 'bounce 1s ease-in-out infinite' }}>
-              🎉
-            </div>
-            <h2 style={{ fontSize: 'clamp(1.75rem, 5vw, 2.5rem)', marginBottom: 'clamp(8px, 2vw, 16px)' }}>恭喜</h2>
-            <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.125rem)', marginBottom: 'clamp(12px, 3vw, 24px)', opacity: 0.8 }}>获胜者是</p>
+            {/* Corner Decorations */}
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  position: 'absolute',
+                  width: '30px',
+                  height: '30px',
+                  border: '4px solid var(--neon-pink)',
+                  top: i < 2 ? '12px' : 'auto',
+                  bottom: i >= 2 ? '12px' : 'auto',
+                  left: i % 2 === 0 ? '12px' : 'auto',
+                  right: i % 2 === 1 ? '12px' : 'auto',
+                  borderColor: ['#FF2E93', '#00D4FF', '#CCFF00', '#FF6B00'][i],
+                  animation: `cornerPulse 0.8s ease-in-out infinite`,
+                  animationDelay: `${i * 0.1}s`,
+                }}
+              />
+            ))}
 
-            <div style={{ margin: '0 auto clamp(12px, 3vw, 24px)' }}>
+            <div style={{ fontSize: 'clamp(64px, 16vw, 100px)', marginBottom: 'clamp(12px, 3vw, 20px)', animation: 'bounce 0.6s ease-in-out infinite' }}>
+              🎊
+            </div>
+
+            <h2 style={{
+              fontSize: 'clamp(2rem, 6vw, 3rem)',
+              marginBottom: 'clamp(8px, 2vw, 16px)',
+              background: 'linear-gradient(45deg, #FF2E93, #00D4FF, #CCFF00)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              animation: 'textShimmer 2s linear infinite',
+            }}>
+              🎉 恭喜 🎉
+            </h2>
+
+            <p style={{
+              fontSize: 'clamp(1.125rem, 3vw, 1.5rem)',
+              marginBottom: 'clamp(8px, 2vw, 16px)',
+              opacity: 0.9,
+              fontWeight: '700',
+              color: 'var(--deep-purple)',
+            }}>
+              「{project.name}」
+            </p>
+
+            <p style={{
+              fontSize: 'clamp(1rem, 2.5vw, 1.25rem)',
+              marginBottom: 'clamp(20px, 5vw, 32px)',
+              opacity: 0.7,
+              fontFamily: "'Fredoka One', cursive",
+            }}>
+              获胜者是
+            </p>
+
+            {/* Winner Avatar with Special Effect */}
+            <div style={{
+              position: 'relative',
+              margin: '0 auto clamp(20px, 5vw, 32px)',
+              display: 'inline-block',
+            }}>
+              {/* Rotating Sparkle Ring */}
+              {showConfetti && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '180px',
+                    height: '180px',
+                    borderRadius: '50%',
+                    border: '3px dashed #FFE700',
+                    animation: 'rotateRing 3s linear infinite',
+                    pointerEvents: 'none',
+                  }}
+                />
+              )}
+
               <Avatar
                 photoUrl={winner.photo_url}
-                size={140}
+                size={150}
                 className="avatar-animated"
               />
+
+              {/* Crown */}
+              <div style={{
+                position: 'absolute',
+                top: '-20px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                fontSize: 'clamp(36px, 8vw, 48px)',
+                animation: 'crownBounce 1s ease-in-out infinite',
+              }}>
+                👑
+              </div>
             </div>
 
-            <h3 style={{ fontSize: 'clamp(1.75rem, 5vw, 2.5rem)', color: 'var(--neon-pink)', marginBottom: 'clamp(16px, 4vw, 32px)' }}>
+            <h3 style={{
+              fontSize: 'clamp(2rem, 6vw, 3rem)',
+              background: 'linear-gradient(45deg, #FF2E93, #FF6B00)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              marginBottom: 'clamp(8px, 2vw, 16px)',
+              animation: 'winnerPop 0.5s ease-out, textGlow 1.5s ease-in-out infinite',
+              fontWeight: '900',
+            }}>
               {winner.name}
             </h3>
+
+            <p style={{
+              fontSize: 'clamp(1.25rem, 3.5vw, 1.75rem)',
+              marginBottom: 'clamp(24px, 6vw, 40px)',
+              color: 'var(--electric-blue)',
+              fontFamily: "'Fredoka One', cursive",
+              animation: 'slideInUp 0.8s ease-out 0.3s both',
+            }}>
+              🏆 运气爆棚！ 🏆
+            </p>
 
             <button
               onClick={() => {
@@ -336,9 +497,15 @@ export default function ProjectDetail() {
                 setShowConfetti(false);
               }}
               className="arcade-btn arcade-btn-primary"
-              style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)' }}
+              style={{
+                fontSize: 'clamp(1.125rem, 3vw, 1.5rem)',
+                padding: 'clamp(12px, 3vw, 20px) clamp(40px, 10vw, 80px)',
+                background: 'linear-gradient(45deg, #FF2E93, #FF6B00)',
+                border: 'none',
+                animation: 'buttonPulse 1.5s ease-in-out infinite',
+              }}
             >
-              确定
+              🎊 太棒了！
             </button>
           </div>
         </div>
@@ -352,14 +519,136 @@ export default function ProjectDetail() {
 
         @keyframes confettiFall {
           0% {
-            top: -20px;
+            top: -30px;
             opacity: 1;
             transform: translateX(0) rotate(0deg);
           }
           100% {
             top: 100vh;
             opacity: 0;
-            transform: translateX(${Math.random() * 200 - 100}px) rotate(720deg);
+            transform: translateX(var(--random-x, 100px)) rotate(1080deg);
+          }
+        }
+
+        @keyframes starFall {
+          0% {
+            top: -40px;
+            opacity: 1;
+            transform: scale(0) rotate(0deg);
+          }
+          50% {
+            transform: scale(1.5) rotate(180deg);
+          }
+          100% {
+            top: 100vh;
+            opacity: 0;
+            transform: scale(1) rotate(360deg);
+          }
+        }
+
+        @keyframes sparkle {
+          0%, 100% {
+            opacity: 0;
+            transform: scale(0);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        @keyframes rainbowRing {
+          0% {
+            transform: rotate(0deg) scale(0.8);
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+          100% {
+            transform: rotate(360deg) scale(1.2);
+            opacity: 0;
+          }
+        }
+
+        @keyframes glowPulse {
+          0%, 100% {
+            box-shadow: 0 0 20px rgba(255, 46, 147, 0.3), 0 0 40px rgba(0, 212, 255, 0.2);
+          }
+          50% {
+            box-shadow: 0 0 40px rgba(255, 46, 147, 0.5), 0 0 80px rgba(0, 212, 255, 0.4);
+          }
+        }
+
+        @keyframes cornerPulse {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+          50% {
+            transform: scale(1.2);
+            opacity: 0.7;
+          }
+        }
+
+        @keyframes textShimmer {
+          0% {
+            background-position: 0% 50%;
+          }
+          100% {
+            background-position: 200% 50%;
+          }
+        }
+
+        @keyframes rotateRing {
+          0% {
+            transform: translate(-50%, -50%) rotate(0deg);
+          }
+          100% {
+            transform: translate(-50%, -50%) rotate(360deg);
+          }
+        }
+
+        @keyframes crownBounce {
+          0%, 100% {
+            transform: translateX(-50%) translateY(0);
+          }
+          50% {
+            transform: translateX(-50%) translateY(-10px);
+          }
+        }
+
+        @keyframes winnerPop {
+          0% {
+            transform: scale(0);
+            opacity: 0;
+          }
+          50% {
+            transform: scale(1.2);
+          }
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+
+        @keyframes textGlow {
+          0%, 100% {
+            filter: drop-shadow(0 0 10px rgba(255, 46, 147, 0.5));
+          }
+          50% {
+            filter: drop-shadow(0 0 25px rgba(255, 107, 0, 0.8));
+          }
+        }
+
+        @keyframes buttonPulse {
+          0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 4px 15px rgba(255, 46, 147, 0.4);
+          }
+          50% {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(255, 46, 147, 0.6);
           }
         }
       `}</style>
