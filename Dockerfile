@@ -3,7 +3,7 @@
 # ========================================
 # 阶段1: 构建前端
 # ========================================
-FROM node:18-alpine AS frontend-builder
+FROM node:22-alpine AS frontend-builder
 
 WORKDIR /frontend
 
@@ -12,8 +12,9 @@ COPY frontend/package*.json ./
 RUN npm ci
 
 # 复制源代码并构建
+# 生产环境使用相对路径，前后端同域名
 COPY frontend/ ./
-RUN npm run build
+RUN VITE_API_BASE_URL=/api npm run build
 
 # ========================================
 # 阶段2: 构建后端
