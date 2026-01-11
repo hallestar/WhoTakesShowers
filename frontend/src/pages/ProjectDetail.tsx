@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Avatar from '../components/Avatar';
+import RouletteWheel from '../components/RouletteWheel';
 import { getCandidateTerm } from '../utils/candidateTerm';
+import { triggerConfetti } from '../utils/confetti';
 import { apiClient, type Project, type Candidate } from '../api';
 
 export default function ProjectDetail() {
@@ -14,6 +16,9 @@ export default function ProjectDetail() {
   const [winner, setWinner] = useState<Candidate | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [candidateTerm, setCandidateTerm] = useState(() => getCandidateTerm());
+
+  // 界面模式：'grid' (卡片网格) 或 'roulette' (轮盘)
+  const [uiMode, setUiMode] = useState<'grid' | 'roulette'>('grid');
 
   useEffect(() => {
     loadProject();
@@ -67,6 +72,23 @@ export default function ProjectDetail() {
     setSelectedIndex(-1);
     setWinner(null);
 
+    // 轮盘模式：先调用后端获取结果，再启动动画
+    if (uiMode === 'roulette') {
+      try {
+        const response = await apiClient.randomize(id!);
+        const winnerId = response.data.candidate_id;
+        const wIndex = candidates.findIndex((c) => c.id === winnerId);
+        setSelectedIndex(wIndex);
+        // 轮盘组件会检测到 selectedIndex 变化并启动旋转
+      } catch (error) {
+        console.error('Randomize failed:', error);
+        setIsSelecting(false);
+        alert('随机选择失败');
+      }
+      return;
+    }
+
+    // 网格模式：播放动画后再调用后端
     const duration = 3000;
     const startTime = Date.now();
     let currentIndex = 0;
@@ -99,11 +121,20 @@ export default function ProjectDetail() {
       setWinner(candidates[wIndex] || null);
       setIsSelecting(false);
       setShowConfetti(true);
+      triggerConfetti();
     } catch (error) {
       console.error('Randomize failed:', error);
       setIsSelecting(false);
       alert('随机选择失败');
     }
+  };
+
+  // 轮盘模式下的完成回调
+  const handleRouletteComplete = (candidate: Candidate) => {
+    setWinner(candidate);
+    setIsSelecting(false);
+    setShowConfetti(true);
+    triggerConfetti();
   };
 
   if (loading) {
@@ -152,6 +183,53 @@ export default function ProjectDetail() {
         <p style={{ fontSize: 'clamp(1rem, 3vw, 1.25rem)', color: 'var(--deep-purple)', opacity: 0.8, fontFamily: "Fredoka One, cursive" }}>
           点击按钮开始随机选择！
         </p>
+
+        {/* UI Mode Selector */}
+        <div
+          style={{
+            display: 'inline-flex',
+            gap: 'clamp(8px, 2vw, 16px)',
+            marginTop: 'clamp(16px, 4vw, 24px)',
+            padding: 'clamp(8px, 2vw, 12px)',
+            background: 'rgba(255, 255, 255, 0.8)',
+            borderRadius: '16px',
+            border: '3px solid var(--deep-purple)',
+            boxShadow: '4px 4px 0 var(--deep-purple)',
+          }}
+        >
+          <button
+            onClick={() => setUiMode('grid')}
+            disabled={isSelecting}
+            className="arcade-btn"
+            style={{
+              padding: 'clamp(8px, 2vw, 12px) clamp(16px, 4vw, 24px)',
+              fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
+              background: uiMode === 'grid' ? 'var(--electric-blue)' : 'white',
+              color: uiMode === 'grid' ? 'white' : 'var(--deep-purple)',
+              border: uiMode === 'grid' ? 'none' : '2px solid var(--deep-purple)',
+              opacity: isSelecting ? 0.5 : 1,
+              cursor: isSelecting ? 'not-allowed' : 'pointer',
+            }}
+          >
+            🎴 卡片模式
+          </button>
+          <button
+            onClick={() => setUiMode('roulette')}
+            disabled={isSelecting}
+            className="arcade-btn"
+            style={{
+              padding: 'clamp(8px, 2vw, 12px) clamp(16px, 4vw, 24px)',
+              fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
+              background: uiMode === 'roulette' ? 'var(--neon-pink)' : 'white',
+              color: uiMode === 'roulette' ? 'white' : 'var(--deep-purple)',
+              border: uiMode === 'roulette' ? 'none' : '2px solid var(--deep-purple)',
+              opacity: isSelecting ? 0.5 : 1,
+              cursor: isSelecting ? 'not-allowed' : 'pointer',
+            }}
+          >
+            🎡 轮盘模式
+          </button>
+        </div>
       </div>
 
       {candidates.length === 0 ? (
@@ -172,71 +250,86 @@ export default function ProjectDetail() {
         </div>
       ) : (
         <>
-          {/* Candidates Grid */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(180px, 45vw, 220px), 1fr))',
-            gap: 'clamp(12px, 3vw, 24px)',
-            marginBottom: 'clamp(20px, 5vw, 40px)'
-          }}>
-            {candidates.map((candidate, index) => {
-              const isSelected = index === selectedIndex;
-              const isDimmed = isSelecting && !isSelected;
+          {/* 根据模式显示不同的界面 */}
+          {uiMode === 'grid' ? (
+            <>
+              {/* Candidates Grid */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(180px, 45vw, 220px), 1fr))',
+                gap: 'clamp(12px, 3vw, 24px)',
+                marginBottom: 'clamp(20px, 5vw, 40px)'
+              }}>
+                {candidates.map((candidate, index) => {
+                  const isSelected = index === selectedIndex;
+                  const isDimmed = isSelecting && !isSelected;
 
-              return (
-                <div
-                  key={candidate.id}
-                  className="arcade-card"
-                  style={{
-                    padding: 'clamp(16px, 4vw, 32px) clamp(12px, 3vw, 24px)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: 'clamp(180px, 45vw, 240px)',
-                    opacity: isDimmed ? 0.3 : 1,
-                    transform: isSelected ? 'scale(1.15) rotate(3deg)' : isSelecting ? 'scale(0.95)' : 'scale(1)',
-                    transition: 'all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                    background: isSelected
-                      ? 'var(--lime-green)'
-                      : index % 3 === 0
-                      ? 'var(--soft-lilac)'
-                      : index % 3 === 1
-                      ? 'var(--minty-fresh)'
-                      : 'var(--peachy)',
-                    border: isSelected ? '4px solid var(--sunset-orange)' : '3px solid var(--deep-purple)',
-                    boxShadow: isSelected
-                      ? '8px 8px 0 var(--sunset-orange)'
-                      : '4px 4px 0 var(--deep-purple)',
-                    animation: isSelected ? 'pulse 0.5s ease-in-out infinite' : 'none',
-                  }}
-                >
-                  <div style={{ marginBottom: 'clamp(8px, 2vw, 16px)' }}>
-                    <Avatar photoUrl={candidate.photo_url} size={100} />
-                  </div>
-                  <h3 style={{ fontSize: 'clamp(1.125rem, 3vw, 1.5rem)', textAlign: 'center' }}>{candidate.name}</h3>
-                  {isSelected && (
+                  return (
                     <div
+                      key={candidate.id}
+                      className="arcade-card"
                       style={{
-                        marginTop: 'clamp(6px, 1.5vw, 12px)',
-                        padding: 'clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 16px)',
-                        background: 'var(--sunset-orange)',
-                        color: 'white',
-                        borderRadius: '999px',
-                        fontFamily: "Fredoka One, cursive",
-                        fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
-                        border: '2px solid var(--deep-purple)',
-                        boxShadow: '2px 2px 0 var(--deep-purple)',
-                        animation: 'bounce 0.6s ease-in-out infinite',
+                        padding: 'clamp(16px, 4vw, 32px) clamp(12px, 3vw, 24px)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: 'clamp(180px, 45vw, 240px)',
+                        opacity: isDimmed ? 0.3 : 1,
+                        transform: isSelected ? 'scale(1.15) rotate(3deg)' : isSelecting ? 'scale(0.95)' : 'scale(1)',
+                        transition: 'all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                        background: isSelected
+                          ? 'var(--lime-green)'
+                          : index % 3 === 0
+                          ? 'var(--soft-lilac)'
+                          : index % 3 === 1
+                          ? 'var(--minty-fresh)'
+                          : 'var(--peachy)',
+                        border: isSelected ? '4px solid var(--sunset-orange)' : '3px solid var(--deep-purple)',
+                        boxShadow: isSelected
+                          ? '8px 8px 0 var(--sunset-orange)'
+                          : '4px 4px 0 var(--deep-purple)',
+                        animation: isSelected ? 'pulse 0.5s ease-in-out infinite' : 'none',
                       }}
                     >
-                      ⭐ 选中中
+                      <div style={{ marginBottom: 'clamp(8px, 2vw, 16px)' }}>
+                        <Avatar photoUrl={candidate.photo_url} size={100} />
+                      </div>
+                      <h3 style={{ fontSize: 'clamp(1.125rem, 3vw, 1.5rem)', textAlign: 'center' }}>{candidate.name}</h3>
+                      {isSelected && (
+                        <div
+                          style={{
+                            marginTop: 'clamp(6px, 1.5vw, 12px)',
+                            padding: 'clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 16px)',
+                            background: 'var(--sunset-orange)',
+                            color: 'white',
+                            borderRadius: '999px',
+                            fontFamily: "Fredoka One, cursive",
+                            fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
+                            border: '2px solid var(--deep-purple)',
+                            boxShadow: '2px 2px 0 var(--deep-purple)',
+                            animation: 'bounce 0.6s ease-in-out infinite',
+                          }}
+                        >
+                          ⭐ 选中中
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Roulette Wheel Mode */}
+              <RouletteWheel
+                candidates={candidates}
+                isSpinning={isSelecting}
+                onSpinComplete={handleRouletteComplete}
+                selectedIndex={selectedIndex}
+              />
+            </>
+          )}
 
           {/* Start Button */}
           <div style={{ textAlign: 'center' }}>
@@ -251,7 +344,10 @@ export default function ProjectDetail() {
                 cursor: isSelecting ? 'not-allowed' : 'pointer',
               }}
             >
-              {isSelecting ? '🎰 随机选择中...' : '🚀 开始挑战'}
+              {isSelecting
+                ? (uiMode === 'roulette' ? '🎡 轮盘转动中...' : '🎰 随机选择中...')
+                : (uiMode === 'roulette' ? '🎡 转动轮盘' : '🚀 开始挑战')
+              }
             </button>
           </div>
         </>
@@ -279,62 +375,7 @@ export default function ProjectDetail() {
             setShowConfetti(false);
           }}
         >
-          {/* Enhanced Confetti Effect */}
-          {showConfetti && (
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-              {/* Confetti */}
-              {[...Array(80)].map((_, i) => (
-                <div
-                  key={`confetti-${i}`}
-                  style={{
-                    position: 'absolute',
-                    width: `${10 + Math.random() * 12}px`,
-                    height: `${10 + Math.random() * 12}px`,
-                    backgroundColor: ['#00D4FF', '#FF2E93', '#CCFF00', '#FF6B00', '#FFE700', '#FF1493'][i % 6],
-                    top: '-30px',
-                    left: `${Math.random() * 100}%`,
-                    animation: `confettiFall ${1.2 + Math.random() * 0.8}s ease-in forwards`,
-                    animationDelay: `${Math.random() * 0.6}s`,
-                    borderRadius: Math.random() > 0.5 ? '50%' : '2px',
-                  }}
-                />
-              ))}
-              {/* Stars */}
-              {[...Array(20)].map((_, i) => (
-                <div
-                  key={`star-${i}`}
-                  style={{
-                    position: 'absolute',
-                    fontSize: `${20 + Math.random() * 24}px`,
-                    top: '-40px',
-                    left: `${Math.random() * 100}%`,
-                    animation: `starFall ${1.5 + Math.random()}s ease-in forwards`,
-                    animationDelay: `${Math.random() * 0.8}s`,
-                  }}
-                >
-                  ⭐
-                </div>
-              ))}
-              {/* Sparkles */}
-              {[...Array(30)].map((_, i) => (
-                <div
-                  key={`sparkle-${i}`}
-                  style={{
-                    position: 'absolute',
-                    width: '6px',
-                    height: '6px',
-                    backgroundColor: '#FFE700',
-                    top: `${Math.random() * 100}%`,
-                    left: `${Math.random() * 100}%`,
-                    animation: `sparkle ${0.8 + Math.random() * 0.4}s ease-in-out infinite`,
-                    animationDelay: `${Math.random() * 1}s`,
-                    borderRadius: '50%',
-                    boxShadow: '0 0 10px #FFE700, 0 0 20px #FFE700',
-                  }}
-                />
-              ))}
-            </div>
-          )}
+          {/* Enhanced Confetti Effect - Now handled by canvas-confetti */}
 
           {/* Rainbow Ring Animation */}
           {showConfetti && (
