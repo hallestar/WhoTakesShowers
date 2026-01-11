@@ -37,21 +37,6 @@ const getSegmentColor = (index: number): string => {
   return colors[index % colors.length];
 };
 
-// Get gradient for segment
-const getSegmentGradient = (index: number): string => {
-  const gradients = [
-    'linear-gradient(135deg, var(--neon-pink) 0%, #FF1493 100%)',
-    'linear-gradient(135deg, var(--electric-blue) 0%, #0099CC 100%)',
-    'linear-gradient(135deg, var(--lime-green) 0%, #99CC00 100%)',
-    'linear-gradient(135deg, var(--sunset-orange) 0%, #CC5500 100%)',
-    'linear-gradient(135deg, var(--soft-lilac) 0%, #C4B5FD 100%)',
-    'linear-gradient(135deg, var(--minty-fresh) 0%, #A7F3D0 100%)',
-    'linear-gradient(135deg, var(--peachy) 0%, #FED7AA 100%)',
-    'linear-gradient(135deg, #FF1493 0%, #CC1177 100%)',
-  ];
-  return gradients[index % gradients.length];
-};
-
 const RouletteWheel = forwardRef<RouletteHandle, RouletteWheelProps>(
   ({ candidates, isSpinning, onSpinComplete, selectedIndex = -1 }, ref) => {
     const [rotation, setRotation] = useState(0);
@@ -474,10 +459,5 @@ const RouletteWheel = forwardRef<RouletteHandle, RouletteWheelProps>(
 );
 
 RouletteWheel.displayName = 'RouletteWheel';
-
-// Helper function for responsive values
-function clamp(min: number, vw: number, max: number): string {
-  return `clamp(${min}px, ${vw}vw, ${max}px)`;
-}
 
 export default RouletteWheel;
