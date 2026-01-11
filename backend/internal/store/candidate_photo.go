@@ -56,6 +56,16 @@ func (s *CandidatePhotoStore) SetAvatar(candidateID uuid.UUID, photoID uuid.UUID
 		Update("is_avatar", true).Error
 }
 
+// Get 获取单张照片
+func (s *CandidatePhotoStore) Get(id uuid.UUID, candidateID uuid.UUID) (*model.CandidatePhoto, error) {
+	var photo model.CandidatePhoto
+	err := DB.Where("id = ? AND candidate_id = ?", id, candidateID).First(&photo).Error
+	if err != nil {
+		return nil, err
+	}
+	return &photo, nil
+}
+
 // GetAvatar 获取候选人的头像
 func (s *CandidatePhotoStore) GetAvatar(candidateID uuid.UUID) (*model.CandidatePhoto, error) {
 	var photo model.CandidatePhoto

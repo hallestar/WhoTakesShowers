@@ -34,7 +34,7 @@ func (s *RandomizeService) Execute(req *RandomizeRequest, userID uuid.UUID) (*Ra
 		return nil, err
 	}
 
-	// 获取候选人ID列表
+	// 获取项目内的候选人ID列表
 	var candidateIDs []uuid.UUID
 	if project.CandidateIDs != "" {
 		if err := json.Unmarshal([]byte(project.CandidateIDs), &candidateIDs); err != nil {
@@ -46,7 +46,7 @@ func (s *RandomizeService) Execute(req *RandomizeRequest, userID uuid.UUID) (*Ra
 		return nil, nil
 	}
 
-	// 获取候选人列表
+	// 获取项目内的候选人列表
 	candidates, err := store.Candidates.GetByIDs(candidateIDs, userID)
 	if err != nil {
 		return nil, err

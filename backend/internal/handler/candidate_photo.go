@@ -340,6 +340,19 @@ func DeleteCandidatePhoto(c *gin.Context) {
 		return
 	}
 
+	// 检查要删除的照片是否是当前头像
+	photoToDelete, err := store.CandidatePhotos.Get(photoID, id)
+	if err != nil {
+		logger.Warn("Photo not found for deletion",
+			zap.String("photo_id", photoID.String()),
+			zap.String("candidate_id", id.String()),
+		)
+		c.JSON(http.StatusNotFound, gin.H{"error": "photo not found"})
+		return
+	}
+
+	isAvatar := photoToDelete.IsAvatar
+
 	// 删除照片
 	if err := store.CandidatePhotos.Delete(photoID); err != nil {
 		logger.Error("Failed to delete photo",
@@ -351,9 +364,33 @@ func DeleteCandidatePhoto(c *gin.Context) {
 		return
 	}
 
+	// 如果删除的是头像，需要更新候选人的photo_url
+	if isAvatar {
+		// 尝试获取新的头像（其他照片中的第一张）
+		avatarPhoto, err := store.CandidatePhotos.GetAvatar(id)
+		if err == nil {
+			// 找到了新的头像，更新Candidate.PhotoURL
+			if err := store.Candidates.UpdatePhoto(id, userID, avatarPhoto.PhotoURL); err != nil {
+				logger.Warn("Failed to update candidate photo URL after avatar deletion",
+					zap.String("candidate_id", id.String()),
+					zap.Error(err),
+				)
+			}
+		} else {
+			// 没有其他照片了，清空Candidate.PhotoURL
+			if err := store.Candidates.UpdatePhoto(id, userID, ""); err != nil {
+				logger.Warn("Failed to clear candidate photo URL after avatar deletion",
+					zap.String("candidate_id", id.String()),
+					zap.Error(err),
+				)
+			}
+		}
+	}
+
 	logger.Info("Photo deleted successfully",
 		zap.String("candidate_id", id.String()),
 		zap.String("photo_id", photoID.String()),
+		zap.Bool("was_avatar", isAvatar),
 	)
 	c.Status(http.StatusNoContent)
 }
